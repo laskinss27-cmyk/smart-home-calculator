@@ -32,19 +32,21 @@ export function App() {
     return vendors.map((v) => recommend(catalog, v, scenario));
   }, [scenario]);
 
-  const [exporting, setExporting] = useState(false);
-  const handleExportPdf = async () => {
-    setExporting(true);
+  const [exporting, setExporting] = useState<Vendor | null>(null);
+  const handleExportPdf = async (vendor: Vendor) => {
+    const rec = recs.find((r) => r.vendor === vendor);
+    if (!rec) return;
+    setExporting(vendor);
     try {
-      const html = buildPdfHtml(scenario, recs);
+      const html = buildPdfHtml(scenario, rec);
       const date = new Date().toISOString().slice(0, 10);
-      const path = await window.api.exportPdf(html, `smart-home-${date}.pdf`);
+      const path = await window.api.exportPdf(html, `kp-${vendor}-${date}.pdf`);
       if (path) console.log("Saved:", path);
     } catch (e) {
       console.error(e);
       alert("Не удалось создать PDF: " + (e as Error).message);
     } finally {
-      setExporting(false);
+      setExporting(null);
     }
   };
 
@@ -57,9 +59,23 @@ export function App() {
             Каталог: {catalog.totals.shelly} Shelly + {catalog.totals.hitepro} HitePRO
           </div>
         </div>
-        <button className="pdf-btn" onClick={handleExportPdf} disabled={exporting}>
-          {exporting ? "Создание PDF…" : "📄 Создать PDF"}
-        </button>
+        <div className="pdf-group">
+          <span className="pdf-label">КП на:</span>
+          <button
+            className="pdf-btn shelly"
+            onClick={() => handleExportPdf("shelly")}
+            disabled={exporting !== null}
+          >
+            {exporting === "shelly" ? "Создание…" : "📄 Shelly"}
+          </button>
+          <button
+            className="pdf-btn hitepro"
+            onClick={() => handleExportPdf("hitepro")}
+            disabled={exporting !== null}
+          >
+            {exporting === "hitepro" ? "Создание…" : "📄 HitePRO"}
+          </button>
+        </div>
       </header>
 
       <main className="main">

@@ -17,17 +17,22 @@ body {
 .topbar .title { font-size: 18px; font-weight: 600; }
 .topbar .sub { color: #6f7892; font-size: 12px; }
 
-.pdf-btn {
-  background: linear-gradient(135deg, #F59E0B 0%, #DC2626 100%);
-  color: #fff; border: 0; padding: 9px 16px;
-  border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;
-  transition: transform 0.1s, box-shadow 0.15s;
+.pdf-group {
+  display: flex; align-items: center; gap: 8px;
 }
+.pdf-label { color: #aab3cc; font-size: 12px; }
+.pdf-btn {
+  border: 0; padding: 8px 14px;
+  border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px;
+  color: #fff; transition: transform 0.1s, box-shadow 0.15s;
+}
+.pdf-btn.shelly { background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); }
+.pdf-btn.hitepro { background: linear-gradient(135deg, #f97316 0%, #ec4899 100%); }
 .pdf-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
 }
-.pdf-btn:disabled { opacity: 0.6; cursor: wait; }
+.pdf-btn:disabled { opacity: 0.55; cursor: wait; transform: none; }
 
 .main {
   flex: 1; display: grid;

@@ -1,11 +1,8 @@
 /**
- * Генератор HTML-разметки для PDF в стиле ctv-document-suite.
- * Палитра: тёмно-синий заголовок, золотая полоса, синие акценты,
- * белые таблицы с тонкими бордерами #E2E8F0.
- *
- * HTML рендерится в скрытом BrowserWindow и печатается в PDF
- * через webContents.printToPDF (Electron). Кириллица поддерживается
- * системным шрифтом — внешние шрифты не нужны.
+ * Генератор HTML для PDF-КП в стиле ctv-document-suite.
+ * Один вендор на документ. Минимальные принудительные разрывы — только перед
+ * заголовком "Список оборудования", чтобы обложка с параметрами оставалась цельной;
+ * сами карточки устройств идут потоком без break-inside, чтобы PDF не пузырился.
  */
 import type { Recommendation, Scenario } from "./types";
 import { tAttrKey, tAttrValue } from "./i18n";
@@ -32,7 +29,7 @@ const TYPE_LABEL: Record<string, string> = {
   relay: "Реле",
   dimmer: "Диммер",
   rgbw: "RGBW-контроллер",
-  drive: "Привод/драйвер штор",
+  drive: "Привод штор",
   smart_plug: "Умная розетка",
   motion_sensor: "Датчик движения",
   leak_sensor: "Датчик протечки",
@@ -43,7 +40,7 @@ const TYPE_LABEL: Record<string, string> = {
   thermostat: "Термостат",
   energy_meter: "Счётчик энергии",
   wall_switch: "Настенный выключатель",
-  hub: "Сервер УД / хаб",
+  hub: "Сервер УД",
   kit: "Готовый комплект",
   bulb: "Умная лампа",
   other: "Прочее",
@@ -74,164 +71,241 @@ function scenarioRows(s: Scenario): string {
     ["Сервер УД", s.needHub ? "да" : "нет"],
   ].filter((r) => r[1] !== 0 && r[1] !== "нет");
 
-  return items
-    .map(
-      ([k, v]) => `
-      <tr>
-        <td style="padding:6px 10px;color:${C.GRAY};border-bottom:1px solid ${C.BORDER};">${esc(k)}</td>
-        <td style="padding:6px 10px;color:${C.TEXT};font-weight:600;border-bottom:1px solid ${C.BORDER};text-align:right;">${esc(String(v))}</td>
+  // Двухколоночная таблица параметров — компактнее.
+  const rows: string[] = [];
+  for (let i = 0; i < items.length; i += 2) {
+    const left = items[i];
+    const right = items[i + 1];
+    rows.push(
+      `<tr>
+        <td class="k">${esc(left[0])}</td>
+        <td class="v">${esc(String(left[1]))}</td>
+        ${right
+          ? `<td class="k">${esc(right[0])}</td>
+             <td class="v">${esc(String(right[1]))}</td>`
+          : `<td></td><td></td>`}
       </tr>`
+    );
+  }
+  return rows.join("");
+}
+
+function deviceRow(it: Recommendation["items"][number], idx: number): string {
+  const { device, qty, reason } = it;
+  const attrs = Object.entries(device.raw_attributes || {}).slice(0, 10);
+
+  const attrPairs = attrs
+    .map(
+      ([k, v]) =>
+        `<span class="attr"><span class="ak">${esc(tAttrKey(k))}:</span> ${esc(tAttrValue(String(v)))}</span>`
     )
     .join("");
-}
-
-function vendorBlock(rec: Recommendation): string {
-  const vname = VENDOR_LABEL[rec.vendor] ?? rec.vendor;
-
-  const itemsHtml = rec.items
-    .map(({ device, qty, reason }) => {
-      const attrs = Object.entries(device.raw_attributes || {})
-        .slice(0, 12)
-        .map(
-          ([k, v]) =>
-            `<tr>
-              <td style="padding:3px 8px;color:${C.GRAY};font-size:9px;border-bottom:1px solid ${C.BORDER};">${esc(tAttrKey(k))}</td>
-              <td style="padding:3px 8px;color:${C.TEXT};font-size:9px;border-bottom:1px solid ${C.BORDER};">${esc(tAttrValue(String(v)))}</td>
-            </tr>`
-        )
-        .join("");
-
-      return `
-      <div style="break-inside:avoid;margin-bottom:14px;border:1px solid ${C.BORDER};border-radius:6px;overflow:hidden;">
-        <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:${C.LBLUE};border-bottom:1px solid ${C.BORDER};">
-          <div style="background:${C.BLUE};color:#fff;font-weight:700;padding:3px 10px;border-radius:4px;font-size:11px;">×${qty}</div>
-          <div style="flex:1;">
-            <div style="font-weight:600;color:${C.DARK};font-size:11px;">${esc(device.title)}</div>
-            <div style="color:${C.GRAY};font-size:9px;margin-top:2px;">${esc(TYPE_LABEL[device.type] ?? device.type)}${device.channels ? ` · ${device.channels} кан.` : ""}${device.power_metering ? " · с измерением мощности" : ""}${device.protocol ? ` · ${esc(device.protocol)}` : ""}</div>
-          </div>
-        </div>
-        <div style="padding:6px 12px;font-size:10px;color:${C.GRAY};font-style:italic;">${esc(reason)}</div>
-        ${attrs ? `<table style="width:100%;border-collapse:collapse;border-top:1px solid ${C.BORDER};"><tbody>${attrs}</tbody></table>` : ""}
-      </div>`;
-    })
-    .join("");
-
-  const gapsHtml = rec.gaps.length
-    ? `<div style="margin-top:10px;padding:10px 12px;background:#FEF2F2;border-left:3px solid #DC2626;border-radius:4px;">
-        <div style="font-weight:600;color:#991B1B;font-size:11px;margin-bottom:4px;">Не покрыто:</div>
-        ${rec.gaps.map((g) => `<div style="color:#7F1D1D;font-size:10px;">• ${esc(g)}</div>`).join("")}
-      </div>`
-    : "";
-
-  const notesHtml = rec.notes.length
-    ? `<div style="margin-top:10px;">
-        ${rec.notes.map((n) => `<div style="padding:6px 10px;background:${C.LGRAY};border-left:3px solid ${C.BLUE};border-radius:4px;color:${C.TEXT};font-size:10px;margin-bottom:4px;">${esc(n)}</div>`).join("")}
-      </div>`
-    : "";
 
   return `
-  <div style="break-inside:avoid;margin-bottom:18px;">
-    <div style="display:flex;align-items:baseline;gap:12px;padding:10px 14px;background:${C.DARK};color:#fff;border-radius:6px 6px 0 0;">
-      <div style="font-size:16px;font-weight:700;">${esc(vname)}</div>
-      <div style="color:#94A3B8;font-size:10px;">${rec.items.length} позиций · ${rec.totalDevices} устройств</div>
-    </div>
-    <div style="padding:14px;border:1px solid ${C.BORDER};border-top:0;border-radius:0 0 6px 6px;">
-      ${itemsHtml || `<div style="color:${C.GRAY};font-size:11px;text-align:center;padding:14px;">Сценарий не покрывается этим вендором</div>`}
-      ${gapsHtml}
-      ${notesHtml}
-    </div>
-  </div>`;
+  <tr class="device-row">
+    <td class="num">${idx + 1}</td>
+    <td class="name">
+      <div class="title">${esc(device.title)}</div>
+      <div class="sub">${esc(TYPE_LABEL[device.type] ?? device.type)}${device.channels ? ` · ${device.channels} кан.` : ""}${device.power_metering ? " · с измерением мощности" : ""}${device.protocol ? ` · ${esc(device.protocol)}` : ""}</div>
+      <div class="reason">${esc(reason)}</div>
+      ${attrPairs ? `<div class="attrs">${attrPairs}</div>` : ""}
+    </td>
+    <td class="qty">×${qty}</td>
+  </tr>`;
 }
 
-export function buildPdfHtml(scenario: Scenario, recs: Recommendation[]): string {
+export function buildPdfHtml(scenario: Scenario, rec: Recommendation): string {
   const date = new Date().toLocaleDateString("ru-RU", {
     day: "2-digit",
     month: "long",
     year: "numeric",
   });
+  const vname = VENDOR_LABEL[rec.vendor] ?? rec.vendor;
+
+  const rows = rec.items.map(deviceRow).join("");
+
+  const gapsHtml = rec.gaps.length
+    ? `<div class="gaps">
+        <div class="gaps-title">Не покрыто оборудованием ${esc(vname)}:</div>
+        <ul>${rec.gaps.map((g) => `<li>${esc(g)}</li>`).join("")}</ul>
+      </div>`
+    : "";
+
+  const notesHtml = rec.notes.length
+    ? `<div class="notes">
+        <div class="notes-title">Пояснения по подбору</div>
+        ${rec.notes.map((n) => `<div class="note">${esc(n)}</div>`).join("")}
+      </div>`
+    : "";
 
   return `<!doctype html>
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<title>Подбор оборудования УД</title>
+<title>КП — ${esc(vname)}</title>
 <style>
-  @page { size: A4; margin: 14mm 12mm; }
+  @page { size: A4; margin: 12mm 11mm; }
   * { box-sizing: border-box; }
   body {
     font-family: "Segoe UI", Arial, sans-serif;
     color: ${C.TEXT};
     margin: 0;
-    font-size: 11px;
+    font-size: 10.5px;
     line-height: 1.4;
   }
+  /* ── Обложка ─────────────────────────────────────────── */
   .cover {
     background: ${C.DARK};
     color: #fff;
-    padding: 28px 24px 24px;
+    padding: 22px 22px 18px;
     border-radius: 8px;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
     position: relative;
     overflow: hidden;
   }
   .cover::before {
-    content: "";
-    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px;
     background: ${C.GOLD};
   }
   .cover::after {
-    content: "";
-    position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+    content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
     background: ${C.BLUE};
   }
-  .cover h1 {
-    margin: 0 0 6px; font-size: 24px; font-weight: 700; letter-spacing: 0.5px;
+  .cover h1 { margin: 0 0 4px; font-size: 22px; font-weight: 700; letter-spacing: 0.4px; }
+  .cover .vendor-tag {
+    display: inline-block; background: ${C.GOLD}; color: ${C.DARK};
+    padding: 3px 10px; border-radius: 4px; font-weight: 700; font-size: 12px;
+    margin: 8px 0 6px;
   }
-  .cover .sub { color: #94A3B8; font-size: 11px; }
-  .cover .date { color: ${C.GOLD}; font-size: 12px; margin-top: 14px; font-weight: 600; }
+  .cover .sub { color: #94A3B8; font-size: 10.5px; }
+  .cover .stats {
+    display: flex; gap: 14px; margin-top: 12px;
+  }
+  .cover .stat {
+    background: rgba(255,255,255,0.06); padding: 6px 12px; border-radius: 5px;
+    border-left: 3px solid ${C.GOLD};
+  }
+  .cover .stat .num { font-size: 16px; font-weight: 700; color: ${C.GOLD}; }
+  .cover .stat .lbl { font-size: 9px; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.3px; }
+  .cover .date { color: #94A3B8; font-size: 10px; margin-top: 10px; }
 
+  /* ── Параметры объекта ─────────────────────────────────── */
   h2 {
-    color: ${C.DARK};
-    font-size: 14px;
-    margin: 0 0 8px;
-    padding-bottom: 4px;
-    border-bottom: 2px solid ${C.GOLD};
+    color: ${C.DARK}; font-size: 13px; margin: 14px 0 6px;
+    padding-bottom: 3px; border-bottom: 2px solid ${C.GOLD};
     display: inline-block;
   }
-  table.scenario {
-    width: 100%;
-    border-collapse: collapse;
-    border: 1px solid ${C.BORDER};
-    border-radius: 6px;
-    overflow: hidden;
-    margin-bottom: 18px;
-    font-size: 11px;
+  table.params {
+    width: 100%; border-collapse: collapse;
+    border: 1px solid ${C.BORDER}; border-radius: 5px; overflow: hidden;
+    margin-bottom: 12px; font-size: 10px;
   }
+  table.params td { padding: 5px 9px; border-bottom: 1px solid ${C.BORDER}; }
+  table.params td.k { color: ${C.GRAY}; width: 22%; }
+  table.params td.v { color: ${C.TEXT}; font-weight: 600; width: 28%; }
+  table.params tr:last-child td { border-bottom: 0; }
+
+  /* ── Список оборудования ──────────────────────────────── */
+  table.devices {
+    width: 100%; border-collapse: collapse; font-size: 10px;
+    border: 1px solid ${C.BORDER}; border-radius: 5px; overflow: hidden;
+  }
+  table.devices thead {
+    background: ${C.DARK}; color: #fff;
+  }
+  table.devices thead th {
+    padding: 7px 9px; text-align: left; font-size: 10px;
+    font-weight: 600; letter-spacing: 0.2px;
+  }
+  table.devices thead th.right { text-align: right; }
+  /* Чередующийся фон + лёгкие границы вместо тяжёлых карточек,
+     чтобы строки могли свободно переноситься между страницами. */
+  table.devices tbody tr.device-row {
+    border-bottom: 1px solid ${C.BORDER};
+  }
+  table.devices tbody tr.device-row:nth-child(even) td { background: ${C.LGRAY}; }
+  table.devices td.num {
+    width: 28px; text-align: center; color: ${C.GRAY};
+    vertical-align: top; padding: 8px 6px; font-weight: 600;
+  }
+  table.devices td.name { padding: 8px 10px; vertical-align: top; }
+  table.devices td.name .title { font-weight: 600; color: ${C.DARK}; font-size: 10.5px; }
+  table.devices td.name .sub {
+    color: ${C.GRAY}; font-size: 9.5px; margin-top: 2px;
+  }
+  table.devices td.name .reason {
+    color: ${C.BLUE}; font-size: 9.5px; font-style: italic; margin-top: 3px;
+  }
+  table.devices td.name .attrs {
+    margin-top: 4px; line-height: 1.55; color: ${C.TEXT}; font-size: 9px;
+  }
+  table.devices td.name .attr {
+    display: inline-block; margin-right: 10px;
+  }
+  table.devices td.name .ak { color: ${C.GRAY}; }
+  table.devices td.qty {
+    width: 50px; text-align: right; padding: 8px 12px; vertical-align: top;
+    font-weight: 700; font-size: 12px; color: ${C.DARK};
+  }
+
+  /* ── Блоки "Не покрыто" / "Пояснения" ────────────────── */
+  .gaps {
+    margin-top: 12px; padding: 9px 12px;
+    background: #FEF2F2; border-left: 3px solid #DC2626; border-radius: 4px;
+  }
+  .gaps-title { font-weight: 700; color: #991B1B; font-size: 10.5px; margin-bottom: 3px; }
+  .gaps ul { margin: 0; padding-left: 18px; color: #7F1D1D; font-size: 10px; }
+  .notes { margin-top: 10px; }
+  .notes-title { font-weight: 700; color: ${C.DARK}; font-size: 10.5px; margin-bottom: 4px; }
+  .note {
+    padding: 5px 10px; background: ${C.AMBER}; border-left: 3px solid ${C.GOLD};
+    border-radius: 4px; color: ${C.TEXT}; font-size: 10px; margin-bottom: 3px;
+  }
+
   .footer {
-    margin-top: 24px;
-    padding-top: 10px;
-    border-top: 1px solid ${C.BORDER};
-    color: ${C.GRAY};
-    font-size: 9px;
-    text-align: center;
+    margin-top: 18px; padding-top: 8px; border-top: 1px solid ${C.BORDER};
+    color: ${C.GRAY}; font-size: 8.5px; text-align: center;
   }
 </style>
 </head>
 <body>
   <div class="cover">
-    <h1>ПОДБОР ОБОРУДОВАНИЯ УМНОГО ДОМА</h1>
-    <div class="sub">Сравнение комплектаций Shelly и HitePRO под параметры объекта</div>
+    <h1>КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ</h1>
+    <div class="vendor-tag">${esc(vname)}</div>
+    <div class="sub">Подбор оборудования умного дома под параметры объекта</div>
+    <div class="stats">
+      <div class="stat">
+        <div class="num">${rec.items.length}</div>
+        <div class="lbl">позиций</div>
+      </div>
+      <div class="stat">
+        <div class="num">${rec.totalDevices}</div>
+        <div class="lbl">устройств</div>
+      </div>
+    </div>
     <div class="date">${esc(date)}</div>
   </div>
 
   <h2>Параметры объекта</h2>
-  <table class="scenario"><tbody>${scenarioRows(scenario)}</tbody></table>
+  <table class="params"><tbody>${scenarioRows(scenario)}</tbody></table>
 
-  <h2>Рекомендованные комплектации</h2>
-  ${recs.map(vendorBlock).join("")}
+  <h2>Список оборудования</h2>
+  <table class="devices">
+    <thead>
+      <tr>
+        <th style="width:28px">№</th>
+        <th>Наименование и характеристики</th>
+        <th class="right" style="width:50px">Кол.</th>
+      </tr>
+    </thead>
+    <tbody>${rows || `<tr><td colspan="3" style="padding:14px;text-align:center;color:${C.GRAY}">Нет позиций по выбранному сценарию.</td></tr>`}</tbody>
+  </table>
+
+  ${gapsHtml}
+  ${notesHtml}
 
   <div class="footer">
-    Подбор автоматический по каталогу вендоров. Окончательная конфигурация уточняется проектировщиком.
+    Подбор автоматический по каталогу ${esc(vname)}. Окончательная конфигурация уточняется проектировщиком.
   </div>
 </body>
 </html>`;
