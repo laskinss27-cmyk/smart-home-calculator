@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import type { Recommendation } from "../types";
+import { tAttrKey, tAttrValue } from "../i18n";
 
 interface Props {
   rec: Recommendation;
@@ -58,8 +59,8 @@ export function VendorColumn({ rec, onOpen }: Props) {
                 <div className="attrs">
                   {Object.entries(device.raw_attributes).slice(0, 25).map(([k, v]) => (
                     <div key={k} className="attr">
-                      <span className="k">{k}</span>
-                      <span className="v">{String(v)}</span>
+                      <span className="k">{tAttrKey(k)}</span>
+                      <span className="v">{tAttrValue(String(v))}</span>
                     </div>
                   ))}
                 </div>

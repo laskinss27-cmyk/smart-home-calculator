@@ -1,5 +1,6 @@
-import { app, BrowserWindow, shell, ipcMain } from "electron";
+import { app, BrowserWindow, shell, ipcMain, dialog } from "electron";
 import * as path from "path";
+import * as fs from "fs";
 
 let win: BrowserWindow | null = null;
 
@@ -31,6 +32,34 @@ app.whenReady().then(() => {
   createWindow();
 
   ipcMain.handle("app:openExternal", (_e, url: string) => shell.openExternal(url));
+
+  ipcMain.handle("pdf:export", async (_e, html: string, suggestedName: string) => {
+    if (!win) throw new Error("No window");
+    const res = await dialog.showSaveDialog(win, {
+      title: "Сохранить PDF",
+      defaultPath: suggestedName,
+      filters: [{ name: "PDF", extensions: ["pdf"] }],
+    });
+    if (res.canceled || !res.filePath) return null;
+
+    const pdfWin = new BrowserWindow({
+      show: false,
+      webPreferences: { offscreen: true, sandbox: true, contextIsolation: true },
+    });
+    try {
+      await pdfWin.loadURL("data:text/html;charset=utf-8," + encodeURIComponent(html));
+      const buf = await pdfWin.webContents.printToPDF({
+        pageSize: "A4",
+        printBackground: true,
+        margins: { top: 0, bottom: 0, left: 0, right: 0 },
+        landscape: false,
+      });
+      fs.writeFileSync(res.filePath, buf);
+      return res.filePath;
+    } finally {
+      pdfWin.destroy();
+    }
+  });
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
