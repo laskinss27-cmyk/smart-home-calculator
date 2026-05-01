@@ -6,8 +6,9 @@ import { recommend } from "./rules";
 import { buildPdfHtml } from "./pdf";
 import { ScenarioForm } from "./components/ScenarioForm";
 import { VendorColumn } from "./components/VendorColumn";
+import { cleanShellyCatalog } from "./catalogClean";
 
-const catalog = catalogJson as unknown as Catalog;
+const catalog = cleanShellyCatalog(catalogJson as unknown as Catalog);
 
 const DEFAULT_SCENARIO: Scenario = {
   lightPoints: 5,
@@ -23,6 +24,9 @@ const DEFAULT_SCENARIO: Scenario = {
   thPoints: 1,
   needHub: false,
   energyMonitoring: true,
+  noNeutral: false,
+  installStyle: "any",
+  protocolPref: "any",
 };
 
 export function App() {

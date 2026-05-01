@@ -72,8 +72,8 @@ function scenarioRows(s: Scenario): string {
     ["Охранка (двери/окна)", s.doorPoints],
     ["T° / влажность", s.thPoints],
     ["Энергомониторинг", s.energyMonitoring ? "да" : "нет"],
-    ["Сервер УД", s.needHub ? "да" : "нет"],
-  ].filter((r) => r[1] !== 0 && r[1] !== "нет");
+    ["Wall Display", s.needHub ? "да" : "нет"],
+  ].filter((r) => r[1] !== 0 && r[1] !== "нет") as [string, number | string][];
 
   // Двухколоночная таблица параметров — компактнее.
   const rows: string[] = [];

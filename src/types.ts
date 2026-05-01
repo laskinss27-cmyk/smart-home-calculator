@@ -41,6 +41,9 @@ export interface Catalog {
   devices: Device[];
 }
 
+export type InstallStyle = "any" | "in_wall" | "din" | "panel";
+export type ProtocolPref = "any" | "wifi_bt" | "zwave";
+
 export interface Scenario {
   lightPoints: number;        // обычные группы освещения (вкл/выкл)
   dimmerPoints: number;       // диммируемые группы освещения
@@ -55,6 +58,11 @@ export interface Scenario {
   thPoints: number;           // температура+влажность
   needHub: boolean;           // нужен ли центральный сервер
   energyMonitoring: boolean;  // приоритет приборов с измерением мощности
+
+  // ── контекст монтажа (Stage 2) ────────────────────────────────
+  noNeutral: boolean;         // в подрозетнике нет нейтрали → нужны 1L/2L + Bypass
+  installStyle: InstallStyle; // куда ставим: подрозетник / DIN / настенная панель / без разницы
+  protocolPref: ProtocolPref; // Wi-Fi/BT (Pro/Plus/Gen3-4) или Z-Wave (Wave) или без разницы
 }
 
 export interface PickedItem {

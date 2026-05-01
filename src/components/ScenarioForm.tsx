@@ -59,11 +59,46 @@ export function ScenarioForm({ value, onChange }: Props) {
           <label className="check">
             <input
               type="checkbox"
+              checked={value.noNeutral}
+              onChange={(e) => set("noNeutral", e.target.checked)}
+            />
+            <span>Нет нейтрали в подрозетниках (Shelly 1L/2L + Bypass)</span>
+          </label>
+          <label className="check">
+            <input
+              type="checkbox"
               checked={value.needHub}
               onChange={(e) => set("needHub", e.target.checked)}
             />
-            <span>Центральный сервер УД</span>
+            <span>Настенная панель (Wall Display)</span>
           </label>
+        </div>
+
+        <div className="field" style={{ marginTop: 10 }}>
+          <div className="label-row"><label>Куда монтируем</label></div>
+          <select
+            value={value.installStyle}
+            onChange={(e) => set("installStyle", e.target.value as any)}
+            style={{ width: "100%", padding: 6, background: "#1c2030", color: "#e6e9ef", border: "1px solid #2a2f44", borderRadius: 6 }}
+          >
+            <option value="any">Без разницы</option>
+            <option value="in_wall">В подрозетники (Plus / Gen3-4 / Mini)</option>
+            <option value="din">На DIN-рейку (Pro / Wave Pro)</option>
+            <option value="panel">Только настенная панель</option>
+          </select>
+        </div>
+
+        <div className="field" style={{ marginTop: 10 }}>
+          <div className="label-row"><label>Протокол связи</label></div>
+          <select
+            value={value.protocolPref}
+            onChange={(e) => set("protocolPref", e.target.value as any)}
+            style={{ width: "100%", padding: 6, background: "#1c2030", color: "#e6e9ef", border: "1px solid #2a2f44", borderRadius: 6 }}
+          >
+            <option value="any">Без разницы</option>
+            <option value="wifi_bt">Wi-Fi / Bluetooth (Plus / Pro / Gen3-4)</option>
+            <option value="zwave">Z-Wave (Wave / Wave Pro)</option>
+          </select>
         </div>
       </div>
     </div>
