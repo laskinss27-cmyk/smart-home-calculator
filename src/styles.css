@@ -75,6 +75,33 @@ body {
 }
 .v-name { font-size: 18px; font-weight: 700; }
 .v-sub { font-size: 12px; opacity: 0.85; }
+.v-total {
+  margin-top: 6px; padding-top: 6px;
+  border-top: 1px solid rgba(255,255,255,0.18);
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 13px;
+}
+.v-total-lbl { opacity: 0.85; }
+.v-total-val { font-weight: 700; font-size: 16px; }
+
+.price-row {
+  display: flex; align-items: center; gap: 6px; margin-top: 6px;
+  font-size: 12px; color: #aab3cc;
+}
+.price-lbl { color: #6f7892; }
+.price-input {
+  width: 90px; padding: 3px 6px;
+  background: #0f1218; border: 1px solid #2a2f44; border-radius: 4px;
+  color: #e6e9ef; font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.price-input:focus { outline: none; border-color: #3f4866; }
+.price-input::-webkit-inner-spin-button,
+.price-input::-webkit-outer-spin-button {
+  -webkit-appearance: none; margin: 0;
+}
+.price-cur { color: #6f7892; }
+.price-sum { color: #6fe39d; font-weight: 600; margin-left: 6px; font-variant-numeric: tabular-nums; }
 
 .vendor-body { padding: 12px; overflow-y: auto; flex: 1; }
 

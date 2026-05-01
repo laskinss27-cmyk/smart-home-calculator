@@ -4,4 +4,7 @@ contextBridge.exposeInMainWorld("api", {
   openExternal: (url: string) => ipcRenderer.invoke("app:openExternal", url),
   exportPdf: (html: string, suggestedName: string) =>
     ipcRenderer.invoke("pdf:export", html, suggestedName),
+  getPrices: () => ipcRenderer.invoke("prices:get"),
+  setPrice: (id: string, price: number | null) =>
+    ipcRenderer.invoke("prices:set", id, price),
 });

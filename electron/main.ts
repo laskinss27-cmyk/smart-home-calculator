@@ -1,6 +1,7 @@
 import { app, BrowserWindow, shell, ipcMain, dialog } from "electron";
 import * as path from "path";
 import * as fs from "fs";
+import { registerPriceIpc } from "./prices";
 
 let win: BrowserWindow | null = null;
 
@@ -32,6 +33,7 @@ app.whenReady().then(() => {
   createWindow();
 
   ipcMain.handle("app:openExternal", (_e, url: string) => shell.openExternal(url));
+  registerPriceIpc();
 
   ipcMain.handle("pdf:export", async (_e, html: string, suggestedName: string) => {
     if (!win) throw new Error("No window");

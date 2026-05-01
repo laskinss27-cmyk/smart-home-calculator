@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import catalogJson from "./data/unified_catalog.json";
 import type { Catalog, Scenario, Vendor } from "./types";
+import type { PriceMap } from "./api";
 import { recommend } from "./rules";
 import { buildPdfHtml } from "./pdf";
 import { ScenarioForm } from "./components/ScenarioForm";
@@ -26,6 +27,27 @@ const DEFAULT_SCENARIO: Scenario = {
 
 export function App() {
   const [scenario, setScenario] = useState<Scenario>(DEFAULT_SCENARIO);
+  const [prices, setPrices] = useState<PriceMap>({});
+
+  useEffect(() => {
+    window.api?.getPrices?.().then(setPrices).catch(() => {});
+  }, []);
+
+  const updatePrice = async (deviceId: string, price: number | null) => {
+    // Оптимистичный апдейт, чтобы инпут сразу отображал введённое.
+    setPrices((p) => {
+      const next = { ...p };
+      if (price === null || !Number.isFinite(price as number) || (price as number) <= 0) delete next[deviceId];
+      else next[deviceId] = price as number;
+      return next;
+    });
+    try {
+      const fresh = await window.api.setPrice(deviceId, price);
+      setPrices(fresh);
+    } catch (e) {
+      console.error("setPrice failed:", e);
+    }
+  };
 
   const recs = useMemo(() => {
     const vendors: Vendor[] = ["shelly", "hitepro"];
@@ -38,7 +60,7 @@ export function App() {
     if (!rec) return;
     setExporting(vendor);
     try {
-      const html = buildPdfHtml(scenario, rec);
+      const html = buildPdfHtml(scenario, rec, prices);
       const date = new Date().toISOString().slice(0, 10);
       const path = await window.api.exportPdf(html, `kp-${vendor}-${date}.pdf`);
       if (path) console.log("Saved:", path);
@@ -88,6 +110,8 @@ export function App() {
             <VendorColumn
               key={r.vendor}
               rec={r}
+              prices={prices}
+              onPriceChange={updatePrice}
               onOpen={(url) => window.api?.openExternal?.(url)}
             />
           ))}

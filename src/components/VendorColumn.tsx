@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import type { Recommendation } from "../types";
+import type { PriceMap } from "../api";
 import { tAttrKey, tAttrValue } from "../i18n";
 
 interface Props {
   rec: Recommendation;
+  prices: PriceMap;
+  onPriceChange: (deviceId: string, price: number | null) => void;
   onOpen: (url: string) => void;
 }
 
@@ -12,9 +15,19 @@ const VENDOR_META: Record<string, { name: string; gradient: [string, string] }> 
   hitepro: { name: "HitePRO", gradient: ["#f97316", "#ec4899"] },
 };
 
-export function VendorColumn({ rec, onOpen }: Props) {
+const RUB = (n: number) =>
+  n.toLocaleString("ru-RU", { maximumFractionDigits: 0 }) + " ₽";
+
+export function VendorColumn({ rec, prices, onPriceChange, onOpen }: Props) {
   const meta = VENDOR_META[rec.vendor];
   const [openId, setOpenId] = useState<string | null>(null);
+
+  const total = rec.items.reduce((sum, it) => {
+    const p = prices[it.device.id];
+    return sum + (p ? p * it.qty : 0);
+  }, 0);
+  const priced = rec.items.filter((it) => prices[it.device.id]).length;
+  const allPriced = priced === rec.items.length && rec.items.length > 0;
 
   return (
     <div className="vendor">
@@ -26,6 +39,14 @@ export function VendorColumn({ rec, onOpen }: Props) {
         <div className="v-sub">
           {rec.items.length} позиций · {rec.totalDevices} устройств
         </div>
+        {rec.items.length > 0 && (
+          <div className="v-total">
+            <span className="v-total-lbl">
+              Итог{!allPriced ? ` (заполнено ${priced}/${rec.items.length})` : ""}:
+            </span>
+            <span className="v-total-val">{RUB(total)}</span>
+          </div>
+        )}
       </div>
 
       <div className="vendor-body">
@@ -35,6 +56,8 @@ export function VendorColumn({ rec, onOpen }: Props) {
 
         {rec.items.map(({ device, qty, reason }) => {
           const isOpen = openId === device.id;
+          const price = prices[device.id];
+          const lineSum = price ? price * qty : 0;
           return (
             <div key={device.id} className={"item" + (isOpen ? " open" : "")}>
               <div className="item-row" onClick={() => setOpenId(isOpen ? null : device.id)}>
@@ -48,6 +71,25 @@ export function VendorColumn({ rec, onOpen }: Props) {
                     {device.protocol && <span className="tag">{device.protocol}</span>}
                   </div>
                   <div className="item-reason">{reason}</div>
+                  <div className="price-row" onClick={(e) => e.stopPropagation()}>
+                    <span className="price-lbl">Цена за шт.:</span>
+                    <input
+                      className="price-input"
+                      type="number"
+                      min={0}
+                      step={1}
+                      placeholder="—"
+                      value={price ?? ""}
+                      onChange={(e) => {
+                        const v = e.target.value.trim();
+                        onPriceChange(device.id, v === "" ? null : Number(v));
+                      }}
+                    />
+                    <span className="price-cur">₽</span>
+                    {price > 0 && (
+                      <span className="price-sum">= {RUB(lineSum)}</span>
+                    )}
+                  </div>
                 </div>
                 <button
                   className="link-btn"

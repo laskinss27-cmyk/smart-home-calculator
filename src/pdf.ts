@@ -5,7 +5,11 @@
  * сами карточки устройств идут потоком без break-inside, чтобы PDF не пузырился.
  */
 import type { Recommendation, Scenario } from "./types";
+import type { PriceMap } from "./api";
 import { tAttrKey, tAttrValue } from "./i18n";
+
+const RUB = (n: number) =>
+  n.toLocaleString("ru-RU", { maximumFractionDigits: 0 }) + " ₽";
 
 const C = {
   DARK: "#1A2B4A",
@@ -90,7 +94,11 @@ function scenarioRows(s: Scenario): string {
   return rows.join("");
 }
 
-function deviceRow(it: Recommendation["items"][number], idx: number): string {
+function deviceRow(
+  it: Recommendation["items"][number],
+  idx: number,
+  prices: PriceMap
+): string {
   const { device, qty, reason } = it;
   const attrs = Object.entries(device.raw_attributes || {}).slice(0, 10);
 
@@ -100,6 +108,12 @@ function deviceRow(it: Recommendation["items"][number], idx: number): string {
         `<span class="attr"><span class="ak">${esc(tAttrKey(k))}:</span> ${esc(tAttrValue(String(v)))}</span>`
     )
     .join("");
+
+  const price = prices[device.id];
+  const lineSum = price ? price * qty : 0;
+  const priceCell = price
+    ? `<td class="price">${RUB(price)}</td><td class="sum">${RUB(lineSum)}</td>`
+    : `<td class="price">—</td><td class="sum">—</td>`;
 
   return `
   <tr class="device-row">
@@ -111,10 +125,15 @@ function deviceRow(it: Recommendation["items"][number], idx: number): string {
       ${attrPairs ? `<div class="attrs">${attrPairs}</div>` : ""}
     </td>
     <td class="qty">×${qty}</td>
+    ${priceCell}
   </tr>`;
 }
 
-export function buildPdfHtml(scenario: Scenario, rec: Recommendation): string {
+export function buildPdfHtml(
+  scenario: Scenario,
+  rec: Recommendation,
+  prices: PriceMap = {}
+): string {
   const date = new Date().toLocaleDateString("ru-RU", {
     day: "2-digit",
     month: "long",
@@ -122,7 +141,22 @@ export function buildPdfHtml(scenario: Scenario, rec: Recommendation): string {
   });
   const vname = VENDOR_LABEL[rec.vendor] ?? rec.vendor;
 
-  const rows = rec.items.map(deviceRow).join("");
+  const rows = rec.items.map((it, i) => deviceRow(it, i, prices)).join("");
+
+  const total = rec.items.reduce((s, it) => {
+    const p = prices[it.device.id];
+    return s + (p ? p * it.qty : 0);
+  }, 0);
+  const pricedCount = rec.items.filter((it) => prices[it.device.id]).length;
+  const showTotal = pricedCount > 0;
+  const totalRow = showTotal
+    ? `<tr class="total-row">
+        <td colspan="4" class="total-lbl">
+          ИТОГО${pricedCount < rec.items.length ? ` (заполнено ${pricedCount} из ${rec.items.length})` : ""}
+        </td>
+        <td class="total-val">${RUB(total)}</td>
+      </tr>`
+    : "";
 
   const gapsHtml = rec.gaps.length
     ? `<div class="gaps">
@@ -247,6 +281,23 @@ export function buildPdfHtml(scenario: Scenario, rec: Recommendation): string {
     width: 50px; text-align: right; padding: 8px 12px; vertical-align: top;
     font-weight: 700; font-size: 12px; color: ${C.DARK};
   }
+  table.devices td.price, table.devices td.sum {
+    text-align: right; padding: 8px 10px; vertical-align: top;
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  table.devices td.price { color: ${C.GRAY}; width: 70px; font-size: 10px; }
+  table.devices td.sum { color: ${C.DARK}; width: 80px; font-size: 10.5px; font-weight: 600; }
+  table.devices tr.total-row td {
+    background: ${C.DARK} !important; color: #fff;
+    padding: 10px 12px; font-weight: 700;
+  }
+  table.devices tr.total-row td.total-lbl {
+    text-align: right; font-size: 11.5px; letter-spacing: 0.4px;
+  }
+  table.devices tr.total-row td.total-val {
+    text-align: right; font-size: 14px; color: ${C.GOLD};
+    font-variant-numeric: tabular-nums;
+  }
 
   /* ── Блоки "Не покрыто" / "Пояснения" ────────────────── */
   .gaps {
@@ -296,9 +347,11 @@ export function buildPdfHtml(scenario: Scenario, rec: Recommendation): string {
         <th style="width:28px">№</th>
         <th>Наименование и характеристики</th>
         <th class="right" style="width:50px">Кол.</th>
+        <th class="right" style="width:70px">Цена</th>
+        <th class="right" style="width:80px">Сумма</th>
       </tr>
     </thead>
-    <tbody>${rows || `<tr><td colspan="3" style="padding:14px;text-align:center;color:${C.GRAY}">Нет позиций по выбранному сценарию.</td></tr>`}</tbody>
+    <tbody>${rows || `<tr><td colspan="5" style="padding:14px;text-align:center;color:${C.GRAY}">Нет позиций по выбранному сценарию.</td></tr>`}${totalRow}</tbody>
   </table>
 
   ${gapsHtml}
