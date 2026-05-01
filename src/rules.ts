@@ -435,30 +435,63 @@ function recommendShelly(catalog: CleanCatalog, s: Scenario): Recommendation {
  * HitePRO: оставляем прежнюю наивную логику, но в чистом виде
  * ════════════════════════════════════════════════════════════════════════ */
 
-function pickHt(catalog: Catalog, type: DeviceType, opts: { titleHas?: string[]; preferMaxChannels?: boolean; preferPM?: boolean } = {}): Device | null {
-  const all = catalog.devices.filter((d) => d.vendor === "hitepro" && d.type === type);
-  let pool = all;
-  if (opts.titleHas?.length) {
-    const t = opts.titleHas.map((s) => s.toLowerCase());
-    pool = pool.filter((d) => t.some((s) => d.title.toLowerCase().includes(s)));
-  }
-  if (pool.length === 0) pool = all;
-  if (pool.length === 0) return null;
-  pool = [...pool].sort((a, b) => {
-    if (opts.preferPM) {
-      const pm = Number(b.power_metering) - Number(a.power_metering);
-      if (pm !== 0) return pm;
-    }
-    if (opts.preferMaxChannels) {
-      const c = (b.channels || 1) - (a.channels || 1);
-      if (c !== 0) return c;
-    } else {
-      const c = (a.channels || 1) - (b.channels || 1);
-      if (c !== 0) return c;
-    }
-    return a.title.localeCompare(b.title);
+/* ─────────────────────────── HitePRO helpers ──────────────────────────── */
+
+function htAll(catalog: Catalog): Device[] {
+  return catalog.devices.filter((d) => d.vendor === "hitepro");
+}
+
+function htFind(catalog: Catalog, ...needles: string[]): Device | undefined {
+  const n = needles.map((s) => s.toLowerCase());
+  return htAll(catalog).find((d) => {
+    const t = d.title.toLowerCase();
+    return n.every((needle) => t.includes(needle));
   });
-  return pool[0];
+}
+
+/** Выбор реле освещения: компактные блоки vs DIN-модули. */
+function htPickLightRelay(catalog: Catalog, s: Scenario): Device | undefined {
+  // DIN-rail или большой объект → DIN-4.Relay (4 линии × 16А)
+  if (s.installStyle === "din" || s.lightPoints >= 6) {
+    return htFind(catalog, "din-4.relay") ?? htFind(catalog, "relay-4m");
+  }
+  // Компактные блоки: Relay-1 для одной линии, Relay-2 для двух
+  if (s.lightPoints >= 2) {
+    return htFind(catalog, "relay-2") ?? htFind(catalog, "relay-1");
+  }
+  return htFind(catalog, "relay-1");
+}
+
+function htPickDimmer(catalog: Catalog, s: Scenario): Device | undefined {
+  if (s.installStyle === "din") {
+    // В каталоге калькулятора нет DIN-4.DIM — падаем на компактный
+    return htFind(catalog, "relay-dim") ?? htFind(catalog, "0/1-10v");
+  }
+  return htFind(catalog, "relay-dim") ?? htFind(catalog, "0/1-10v");
+}
+
+function htPickRgbw(catalog: Catalog, s: Scenario): Device | undefined {
+  if (s.installStyle === "din") {
+    return htFind(catalog, "din-1.rgbw") ?? htFind(catalog, "din-4.led");
+  }
+  return htFind(catalog, "relay-rgbw") ?? htFind(catalog, "relay-led");
+}
+
+function htPickHeavyRelay(catalog: Catalog): Device | undefined {
+  // 16А реле — основа сценариев отопления и тёплого пола (по каталогу с.17)
+  return htFind(catalog, "relay-16") ?? htFind(catalog, "din-4.relay");
+}
+
+function htPickValveDriver(catalog: Catalog): Device | undefined {
+  // Relay-DRIVE — управление шаровыми кранами / приводами
+  return htFind(catalog, "relay-drive");
+}
+
+function htPickHub(catalog: Catalog, s: Scenario): Device | undefined {
+  if (s.installStyle === "din") {
+    return htFind(catalog, "din-gateway") ?? htFind(catalog, "gateway");
+  }
+  return htFind(catalog, "сервер", "gateway") ?? htFind(catalog, "gateway");
 }
 
 function recommendHitePro(catalog: Catalog, s: Scenario): Recommendation {
@@ -466,65 +499,120 @@ function recommendHitePro(catalog: Catalog, s: Scenario): Recommendation {
   const gaps: string[] = [];
   const notes: string[] = [];
 
+  // ── Свет ───────────────────────────────────────────────────
   if (s.lightPoints > 0) {
-    const r = pickHt(catalog, "relay", { preferMaxChannels: true, preferPM: s.energyMonitoring });
-    if (r) add(items, r, unitsNeeded(s.lightPoints, r.channels), `освещение: ${s.lightPoints} групп`);
+    const r = htPickLightRelay(catalog, s);
+    if (r) add(items, r, unitsNeeded(s.lightPoints, r.channels || 1), `освещение: ${s.lightPoints} групп`);
     else gaps.push(`Освещение (${s.lightPoints})`);
   }
+
+  // ── Диммирование ───────────────────────────────────────────
   if (s.dimmerPoints > 0) {
-    const d = pickHt(catalog, "dimmer", { preferMaxChannels: true });
+    const d = htPickDimmer(catalog, s);
     if (d) add(items, d, unitsNeeded(s.dimmerPoints, d.channels || 1), `диммирование: ${s.dimmerPoints} гр.`);
     else gaps.push(`Диммирование (${s.dimmerPoints})`);
   }
+
+  // ── RGBW ───────────────────────────────────────────────────
   if (s.rgbwPoints > 0) {
-    const d = pickHt(catalog, "rgbw");
+    const d = htPickRgbw(catalog, s);
     if (d) add(items, d, s.rgbwPoints, `RGBW: ${s.rgbwPoints} лент`);
     else gaps.push(`RGBW (${s.rgbwPoints})`);
   }
+
+  // ── Розетки ────────────────────────────────────────────────
   if (s.socketPoints > 0) {
-    const p = pickHt(catalog, "smart_plug");
+    const p = htFind(catalog, "smart socket") ?? htFind(catalog, "розетка");
     if (p) add(items, p, s.socketPoints, `розетки: ${s.socketPoints} шт`);
   }
+
+  // ── Шторы ──────────────────────────────────────────────────
   if (s.curtainPoints > 0) {
-    const d = pickHt(catalog, "drive");
-    if (d) add(items, d, s.curtainPoints, `шторы: ${s.curtainPoints} приводов`);
+    const d = htFind(catalog, "relay-drive");
+    if (d) add(items, d, s.curtainPoints, `шторы: ${s.curtainPoints} приводов (Relay-DRIVE)`);
     else gaps.push(`Шторы (${s.curtainPoints})`);
   }
+
+  // ── Отопление: Relay-16A + Smart Air + Gateway (см. каталог с.17, с.50) ─
   if (s.heatingZones > 0) {
-    const t = pickHt(catalog, "thermostat");
-    if (t) add(items, t, s.heatingZones, `отопление: ${s.heatingZones} зон`);
-    else gaps.push(`Отопление (${s.heatingZones})`);
+    const r = htPickHeavyRelay(catalog);
+    const air = htFind(catalog, "smart air");
+    if (r) {
+      add(items, r, unitsNeeded(s.heatingZones, r.channels || 1), `отопление: реле котла/насоса (Relay-16A)`);
+      if (air) add(items, air, s.heatingZones, `T°/влажность для климат-сценариев`);
+      notes.push("Отопление HitePRO: Relay-16A + датчик Smart Air + сервер Gateway для сценариев (фирменного термостата нет).");
+    } else {
+      gaps.push(`Отопление (${s.heatingZones})`);
+    }
   }
+
+  // ── Тёплый пол: Relay-16A + Rexant floor sensor ─────────────
   if (s.floorHeatingZones > 0) {
-    const t = pickHt(catalog, "thermostat");
-    const f = pickHt(catalog, "floor_temp_sensor");
-    if (t) add(items, t, s.floorHeatingZones, `тёплый пол: термостат на ${s.floorHeatingZones} зон`);
-    if (f) add(items, f, s.floorHeatingZones, `тёплый пол: датчик стяжки`);
-    if (!t) gaps.push(`Тёплый пол (${s.floorHeatingZones})`);
+    const r = htPickHeavyRelay(catalog);
+    const floor = htFind(catalog, "температуры пола") ?? htFind(catalog, "rexant");
+    if (r) {
+      add(items, r, unitsNeeded(s.floorHeatingZones, r.channels || 1), `тёплый пол: коммутация (Relay-16A)`);
+      if (floor) add(items, floor, s.floorHeatingZones, `датчик температуры пола`);
+      notes.push("Тёплый пол HitePRO: Relay-16A + датчик пола + сервер Gateway (управление по сценарию).");
+    } else {
+      gaps.push(`Тёплый пол (${s.floorHeatingZones})`);
+    }
   }
+
+  // ── Движение ───────────────────────────────────────────────
   if (s.motionPoints > 0) {
-    const m = pickHt(catalog, "motion_sensor");
-    if (m) add(items, m, s.motionPoints, `движение: ${s.motionPoints} шт`);
+    const m = htFind(catalog, "smart motion");
+    if (m) add(items, m, s.motionPoints, `движение/освещённость: ${s.motionPoints} шт`);
+    else gaps.push(`Движение (${s.motionPoints})`);
   }
+
+  // ── Антипротечка: Smart Water + Relay-DRIVE для шаровых кранов ──
   if (s.leakPoints > 0) {
-    const l = pickHt(catalog, "leak_sensor");
-    const v = pickHt(catalog, "valve");
-    if (l) add(items, l, s.leakPoints, `протечка: ${s.leakPoints} датчиков`);
-    if (v) add(items, v, 2, `краны перекрытия`);
+    const water = htFind(catalog, "smart water");
+    const drive = htPickValveDriver(catalog);
+    if (water) add(items, water, s.leakPoints, `протечка: ${s.leakPoints} датчиков`);
+    else gaps.push(`Протечка (${s.leakPoints})`);
+    if (drive) {
+      add(items, drive, 2, `управление шаровыми кранами ХВС/ГВС (Relay-DRIVE + внешний привод)`);
+      notes.push("Кран перекрытия: Relay-DRIVE 12В/220В + внешний моторизированный шаровой кран (фирменного крана нет).");
+    }
   }
+
+  // ── Двери / окна ───────────────────────────────────────────
   if (s.doorPoints > 0) {
-    const d = pickHt(catalog, "door_sensor");
-    if (d) add(items, d, s.doorPoints, `охранка: ${s.doorPoints} датчиков`);
+    const d = htFind(catalog, "smart checker");
+    if (d) add(items, d, s.doorPoints, `двери/окна: ${s.doorPoints} датчиков`);
+    else gaps.push(`Двери/окна (${s.doorPoints})`);
   }
+
+  // ── T° / влажность ─────────────────────────────────────────
   if (s.thPoints > 0) {
-    const th = pickHt(catalog, "temperature_humidity");
+    const th = htFind(catalog, "smart air");
     if (th) add(items, th, s.thPoints, `T°/влажность: ${s.thPoints} шт`);
+    else gaps.push(`T°/влажность (${s.thPoints})`);
   }
-  if (s.needHub) {
-    const hub = pickHt(catalog, "hub");
-    if (hub) add(items, hub, 1, `центральный сервер УД`);
+
+  // ── Сервер УД (Gateway) ─────────────────────────────────────
+  // По каталогу: «Получая радиосигнал от передатчиков, блок управления замыкает цепь».
+  // Без Gateway работают только связки выключатель↔блок.
+  // Сценарии (отопление, протечка, T°/H, движение → свет, удалённое управление) требуют Gateway.
+  const needsGateway =
+    s.needHub ||
+    s.heatingZones > 0 ||
+    s.floorHeatingZones > 0 ||
+    s.leakPoints > 0 ||
+    s.thPoints > 0 ||
+    s.energyMonitoring;
+  if (needsGateway) {
+    const hub = htPickHub(catalog, s);
+    if (hub) add(items, hub, 1, "сервер умного дома (Gateway/DIN-Gateway)");
+    else notes.push("Нужен сервер HiTE PRO Gateway, но он не найден в каталоге.");
   } else {
-    notes.push("HitePRO — радиосистема 868 МГц. Без сервера работает только локально.");
+    notes.push("HitePRO без сервера: каждая клавиша работает напрямую с блоком (локально, 868 МГц), без приложения и сценариев.");
+  }
+
+  if (s.energyMonitoring) {
+    notes.push("Энергомониторинг у HitePRO отсутствует как функция блоков — учёт идёт косвенно через сценарии Gateway.");
   }
 
   const totalDevices = items.reduce((acc, i) => acc + i.qty, 0);
