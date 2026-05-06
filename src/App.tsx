@@ -1,14 +1,34 @@
 import React, { useEffect, useMemo, useState } from "react";
 import catalogJson from "./data/unified_catalog.json";
-import type { Catalog, Scenario, Vendor } from "./types";
+import ionCatalogJson from "./data/ion_catalog.json";
+import type { Catalog, Device, Scenario, Vendor } from "./types";
 import type { PriceMap } from "./api";
 import { recommend } from "./rules";
 import { buildPdfHtml } from "./pdf";
 import { ScenarioForm } from "./components/ScenarioForm";
 import { VendorColumn } from "./components/VendorColumn";
-import { cleanShellyCatalog } from "./catalogClean";
 
-const catalog = cleanShellyCatalog(catalogJson as unknown as Catalog);
+const ionDevices: Device[] = (ionCatalogJson as any).devices.map((d: any) => ({
+  ...d,
+  url: "",
+  voltage: null,
+  protocol: (d.tech || []).join(", "),
+  raw_attributes: {},
+}));
+
+const hiteproDevices = (catalogJson as any).devices.filter(
+  (d: any) => d.vendor === "hitepro"
+);
+
+const catalog: Catalog = {
+  version: 1,
+  totals: {
+    shelly: ionDevices.length,
+    hitepro: hiteproDevices.length,
+  },
+  by_type: (catalogJson as any).by_type,
+  devices: [...ionDevices, ...hiteproDevices],
+};
 
 const DEFAULT_SCENARIO: Scenario = {
   lightPoints: 5,
@@ -16,12 +36,11 @@ const DEFAULT_SCENARIO: Scenario = {
   rgbwPoints: 0,
   socketPoints: 2,
   curtainPoints: 0,
-  heatingZones: 0,
+  radiatorCount: 0,
   floorHeatingZones: 2,
   motionPoints: 2,
-  leakPoints: 2,
+  antiLeakZones: 2,
   doorPoints: 1,
-  thPoints: 1,
   needHub: false,
   energyMonitoring: true,
   noNeutral: false,

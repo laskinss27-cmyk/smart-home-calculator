@@ -7,7 +7,6 @@ import type {
   Scenario,
   Vendor,
 } from "./types";
-import type { CleanCatalog, CleanDevice } from "./catalogClean";
 
 /* ════════════════════════════════════════════════════════════════════════
  * Общие утилиты
@@ -30,14 +29,27 @@ function unitsNeeded(points: number, channelsPerUnit: number): number {
 }
 
 /* ════════════════════════════════════════════════════════════════════════
- * SHELLY: подбор по use-cases с учётом meta
- *  Регламентирует ответы из Shelly Catalog 2025 (Lighting / Shutters /
- *  Heating / Plugs / Sensors / Smart Panels).
+ * SHELLY: подбор из каталога i-on.pro (официальный дистрибьютор РФ)
+ *
+ * Каталог ion_catalog.json содержит только реально доступные устройства
+ * с полями: install (in_wall/din/wall/wireless), tech (wifi/zwave/bluetooth),
+ * category (relay/dimmer/sensor/...), channels, power_metering, price.
+ *
+ * Подбор ведётся по структурированным полям, а не по названиям.
  * ════════════════════════════════════════════════════════════════════════ */
 
-type ShellyDevs = CleanDevice[];
+interface ShellyCtx {
+  devs: Device[];
+  s: Scenario;
+  notes: string[];
+  gaps: string[];
+}
 
-function findByTitle(devs: ShellyDevs, ...needles: string[]): CleanDevice | undefined {
+function byId(devs: Device[], id: string): Device | undefined {
+  return devs.find((d) => d.id === id);
+}
+
+function find(devs: Device[], ...needles: string[]): Device | undefined {
   const n = needles.map((s) => s.toLowerCase());
   return devs.find((d) => {
     const t = d.title.toLowerCase();
@@ -45,257 +57,175 @@ function findByTitle(devs: ShellyDevs, ...needles: string[]): CleanDevice | unde
   });
 }
 
-/** Все устройства, у которых заголовок содержит ВСЕ needles. */
-function allByTitle(devs: ShellyDevs, ...needles: string[]): CleanDevice[] {
-  const n = needles.map((s) => s.toLowerCase());
-  return devs.filter((d) => {
-    const t = d.title.toLowerCase();
-    return n.every((needle) => t.includes(needle));
-  });
+function relays(devs: Device[], installType: string): Device[] {
+  return devs.filter(
+    (d) =>
+      d.category === "relay" &&
+      d.channels! >= 1 &&
+      (d.install || []).includes(installType)
+  );
 }
 
-interface ShellyContext {
-  devs: ShellyDevs;
-  s: Scenario;
-  notes: string[];
-  gaps: string[];
+function cheapest(list: Device[]): Device | undefined {
+  if (!list.length) return undefined;
+  return list.reduce((a, b) => ((a.price || Infinity) <= (b.price || Infinity) ? a : b));
 }
 
-/** Выбор реле освещения по use-case Shelly Lighting Solutions. */
-function pickLightRelay(ctx: ShellyContext, channelsNeeded: number): CleanDevice | undefined {
+function pickLightRelay(ctx: ShellyCtx, channelsNeeded: number): Device | undefined {
   const { devs, s, notes } = ctx;
 
-  // 1) Нет нейтрали → 1L Gen3 (1 канал) либо 2L Gen3 (2 канала). Bypass добавим отдельно.
   if (s.noNeutral) {
-    const dev = channelsNeeded >= 2
-      ? (findByTitle(devs, "shelly 2l") ?? findByTitle(devs, "shelly 1l"))
-      : findByTitle(devs, "shelly 1l");
+    const dev = find(devs, "1l gen3") ?? find(devs, "2l gen3");
     if (dev) {
-      notes.push("Нет нейтрали — взяли Shelly 1L/2L Gen3, к ним нужен Shelly Bypass на каждой линии (LED <30 Вт).");
+      notes.push("Нет нейтрали — " + dev.title + " (не требует нейтрального провода).");
       return dev;
     }
   }
 
-  // 2) DIN-rail / большой объект → Pro 4PM
-  if (s.installStyle === "din" || channelsNeeded >= 8) {
-    return (
-      findByTitle(devs, "pro 4pm") ??
-      findByTitle(devs, "wave pro 2pm") ??
-      findByTitle(devs, "pro 2pm")
-    );
+  if (s.installStyle === "din") {
+    const dinRelays = relays(devs, "din").sort((a, b) => (b.channels || 1) - (a.channels || 1));
+    return dinRelays.find((d) => (d.channels || 1) >= 4)
+      ?? dinRelays.find((d) => (d.channels || 1) >= 2)
+      ?? dinRelays[0];
   }
 
-  // 3) Wave (Z-Wave) — если пользователь выбрал Z-Wave
   if (s.protocolPref === "zwave") {
-    if (channelsNeeded >= 2) {
-      return (
-        findByTitle(devs, "wave 2pm") ??
-        findByTitle(devs, "wave 2") ??
-        findByTitle(devs, "wave 1pm") ??
-        findByTitle(devs, "wave 1")
-      );
-    }
-    return (
-      findByTitle(devs, "wave 1 mini") ??
-      findByTitle(devs, "wave 1pm mini") ??
-      findByTitle(devs, "wave 1pm") ??
-      findByTitle(devs, "wave 1")
-    );
+    const wave = devs.filter((d) => d.category === "relay" && (d.tech || []).includes("zwave"));
+    return channelsNeeded >= 2
+      ? (wave.find((d) => (d.channels || 1) >= 2) ?? wave[0])
+      : (wave.find((d) => (d.channels || 1) === 1) ?? wave[0]);
   }
 
-  // 4) По умолчанию (Wi-Fi/BT, in_wall): 1 Mini Gen4 на одну группу,
-  //    либо 1PM Gen4 если нужен мониторинг, либо 2PM Gen4 при ≥2 каналах.
+  const inWall = relays(devs, "in_wall");
   if (channelsNeeded >= 2) {
-    return (
-      findByTitle(devs, "shelly 2pm gen4") ??
-      findByTitle(devs, "shelly 2pm gen3") ??
-      findByTitle(devs, "shelly plus 2pm")
-    );
+    const twoChannel = inWall
+      .filter((d) => (d.channels || 1) >= 2)
+      .sort((a, b) => (a.price || Infinity) - (b.price || Infinity));
+    return twoChannel[0] ?? cheapest(inWall);
   }
+
   if (s.energyMonitoring) {
-    return (
-      findByTitle(devs, "1pm mini gen4") ??
-      findByTitle(devs, "shelly 1pm gen4") ??
-      findByTitle(devs, "shelly 1pm gen3") ??
-      findByTitle(devs, "shelly plus 1pm")
-    );
+    const pmRelays = inWall
+      .filter((d) => d.power_metering && (d.channels || 1) === 1)
+      .sort((a, b) => (a.price || Infinity) - (b.price || Infinity));
+    return pmRelays[0] ?? cheapest(inWall);
   }
-  return (
-    findByTitle(devs, "1 mini gen4") ??
-    findByTitle(devs, "shelly 1 gen4") ??
-    findByTitle(devs, "shelly 1 gen3") ??
-    findByTitle(devs, "shelly plus 1")
-  );
+
+  const oneChannel = inWall
+    .filter((d) => (d.channels || 1) === 1)
+    .sort((a, b) => (a.price || Infinity) - (b.price || Infinity));
+  return oneChannel[0] ?? cheapest(inWall);
 }
 
-function pickDimmer(ctx: ShellyContext): CleanDevice | undefined {
+function pickDimmer(ctx: ShellyCtx): Device | undefined {
   const { devs, s } = ctx;
+  const dimmers = devs.filter((d) => d.category === "dimmer");
+
   if (s.installStyle === "din") {
-    return (
-      findByTitle(devs, "pro dimmer 2pm") ??
-      findByTitle(devs, "pro dimmer 1pm") ??
-      findByTitle(devs, "pro dimmer 0/1-10v") ??
-      findByTitle(devs, "pro dimmer")
-    );
+    const din = dimmers.filter((d) => (d.install || []).includes("din"));
+    return cheapest(din) ?? cheapest(dimmers);
   }
-  if (s.protocolPref === "zwave") {
-    return findByTitle(devs, "wave dimmer");
-  }
-  return (
-    findByTitle(devs, "dimmer 0/1-10v pm gen4") ??
-    findByTitle(devs, "shelly dimmer gen4") ??
-    findByTitle(devs, "shelly dimmer gen3") ??
-    findByTitle(devs, "dali dimmer gen3")
-  );
+
+  const inWall = dimmers.filter((d) => (d.install || []).includes("in_wall"));
+  return cheapest(inWall) ?? cheapest(dimmers);
 }
 
-function pickRgbw(ctx: ShellyContext): CleanDevice | undefined {
+function pickRgbw(ctx: ShellyCtx): Device | undefined {
   const { devs, s } = ctx;
+  const rgbw = devs.filter(
+    (d) => (d.product_types || []).some((t) => t === "rgbw")
+  );
   if (s.installStyle === "din") {
-    return findByTitle(devs, "pro rgbww pm");
+    const din = rgbw.filter((d) => (d.install || []).includes("din"));
+    return cheapest(din) ?? cheapest(rgbw);
   }
-  return findByTitle(devs, "plus rgbw pm") ?? findByTitle(devs, "rgbw");
+  const inWall = rgbw.filter((d) => (d.install || []).includes("in_wall"));
+  return cheapest(inWall) ?? cheapest(rgbw);
 }
 
-function pickShutter(ctx: ShellyContext): CleanDevice | undefined {
+function pickShutter(ctx: ShellyCtx): Device | undefined {
   const { devs, s } = ctx;
+  const shutters = devs.filter(
+    (d) => (d.product_types || []).some((t) => t === "shutter")
+  );
+
   if (s.installStyle === "din") {
-    return (
-      findByTitle(devs, "pro dual cover") ??
-      findByTitle(devs, "wave pro shutter")
-    );
+    const din = shutters.filter((d) => (d.install || []).includes("din"));
+    return cheapest(din) ?? cheapest(shutters);
   }
-  if (s.protocolPref === "zwave") {
-    return findByTitle(devs, "wave shutter");
-  }
-  // Wi-Fi: 2PM Gen4 в режиме шторного контроллера — это и есть штатное решение
-  return (
-    findByTitle(devs, "shelly 2pm gen4") ??
-    findByTitle(devs, "shelly 2pm gen3") ??
-    findByTitle(devs, "shelly plus 2pm")
-  );
+
+  const inWall = shutters.filter((d) => (d.install || []).includes("in_wall"));
+  return cheapest(inWall) ?? cheapest(shutters);
 }
 
-function pickPlug(ctx: ShellyContext): CleanDevice | undefined {
+function pickPlug(ctx: ShellyCtx): Device | undefined {
+  const plugs = ctx.devs.filter((d) => d.category === "smart_plug");
+  return cheapest(plugs);
+}
+
+function pickDoorWindow(ctx: ShellyCtx): Device | undefined {
+  return find(ctx.devs, "door/window") ?? find(ctx.devs, "door");
+}
+
+function pickMotion(ctx: ShellyCtx): Device | undefined {
+  return find(ctx.devs, "motion");
+}
+
+function pickFlood(ctx: ShellyCtx): Device | undefined {
+  return find(ctx.devs, "flood");
+}
+
+function pickTRV(ctx: ShellyCtx): Device | undefined {
+  return find(ctx.devs, "trv");
+}
+
+function pickFloorRelay(ctx: ShellyCtx): Device | undefined {
+  const inWall = relays(ctx.devs, "in_wall")
+    .filter((d) => d.power_metering && (d.channels || 1) === 1)
+    .sort((a, b) => (a.price || Infinity) - (b.price || Infinity));
+  return inWall[0];
+}
+
+function pickAddOn(ctx: ShellyCtx): Device | undefined {
+  return find(ctx.devs, "addon") ?? find(ctx.devs, "add-on");
+}
+
+function pickEnergyMeter(ctx: ShellyCtx): Device | undefined {
   const { devs, s } = ctx;
-  if (s.energyMonitoring) {
-    return (
-      findByTitle(devs, "plug s mtr gen3") ??
-      findByTitle(devs, "plug pm gen3") ??
-      findByTitle(devs, "plug m gen3")
-    );
-  }
-  return (
-    findByTitle(devs, "plug s mtr gen3") ??
-    findByTitle(devs, "plug m gen3") ??
-    findByTitle(devs, "plug s gen3") ??
-    findByTitle(devs, "shelly plug")
-  );
-}
-
-function pickTH(ctx: ShellyContext): CleanDevice | undefined {
-  const { devs, s } = ctx;
-  // BLU H&T — батарейный, идеален для жилых помещений; H&T Gen3 — Wi-Fi розеточный
-  if (s.protocolPref === "wifi_bt") {
-    return findByTitle(devs, "h&t gen3") ?? findByTitle(devs, "blu h&t");
-  }
-  return findByTitle(devs, "blu h&t") ?? findByTitle(devs, "h&t gen3");
-}
-
-function pickDoorWindow(ctx: ShellyContext): CleanDevice | undefined {
-  const { devs, s } = ctx;
-  if (s.protocolPref === "zwave") {
-    return findByTitle(devs, "wave door/window") ?? findByTitle(devs, "blu door/window");
-  }
-  return findByTitle(devs, "blu door/window") ?? findByTitle(devs, "wave door/window");
-}
-
-function pickMotion(ctx: ShellyContext): CleanDevice | undefined {
-  const { devs, s } = ctx;
-  if (s.protocolPref === "zwave") {
-    return findByTitle(devs, "wave motion");
-  }
-  return (
-    findByTitle(devs, "blu motion") ??
-    findByTitle(devs, "motion 2") ??
-    findByTitle(devs, "presence")
-  );
-}
-
-function pickLeak(ctx: ShellyContext): CleanDevice | undefined {
-  return findByTitle(ctx.devs, "flood gen4") ?? findByTitle(ctx.devs, "flood");
-}
-
-/** TRV (батарейные радиаторные термоголовки) — это BLU TRV. */
-function pickTRV(ctx: ShellyContext): CleanDevice | undefined {
-  return findByTitle(ctx.devs, "blu trv");
-}
-
-/** Контроллер тёплого пола: 1PM Mini Gen4 + датчик температуры. */
-function pickFloorRelay(ctx: ShellyContext): CleanDevice | undefined {
-  const { devs } = ctx;
-  return (
-    findByTitle(devs, "1pm mini gen4") ??
-    findByTitle(devs, "1pm mini gen3") ??
-    findByTitle(devs, "shelly 1pm gen4") ??
-    findByTitle(devs, "shelly 1pm gen3")
-  );
-}
-
-function pickAddOnDS(ctx: ShellyContext): CleanDevice | undefined {
-  // Plus Add-on +1DS (или Plus Add-on) — для DS18B20 датчиков пола
-  return (
-    findByTitle(ctx.devs, "plus add", "+1ds") ??
-    findByTitle(ctx.devs, "plus add", "ds") ??
-    findByTitle(ctx.devs, "plus addon") ??
-    findByTitle(ctx.devs, "plus add-on")
-  );
-}
-
-function pickEnergyMeter(ctx: ShellyContext): CleanDevice | undefined {
-  const { devs, s } = ctx;
+  const meters = devs.filter((d) => d.category === "energy_meter");
   if (s.installStyle === "din") {
-    return findByTitle(devs, "pro 3em") ?? findByTitle(devs, "pro em-50");
+    const din = meters.filter((d) => (d.install || []).includes("din"));
+    return cheapest(din) ?? cheapest(meters);
   }
-  return findByTitle(devs, "shelly 3em") ?? findByTitle(devs, "em mini gen4") ?? findByTitle(devs, "shelly em gen4");
+  const inWall = meters.filter((d) => (d.install || []).includes("in_wall"));
+  return cheapest(inWall) ?? cheapest(meters);
 }
 
-function pickWallDisplay(ctx: ShellyContext): CleanDevice | undefined {
-  return (
-    findByTitle(ctx.devs, "wall display xl") ??
-    findByTitle(ctx.devs, "wall display x2i") ??
-    findByTitle(ctx.devs, "wall display")
-  );
+function pickBypass(ctx: ShellyCtx): Device | undefined {
+  return find(ctx.devs, "bypass");
 }
 
-function pickBypass(ctx: ShellyContext): CleanDevice | undefined {
-  // Если в каталоге Bypass представлен — добавим (часть каталогов хранит его как Add-on/other)
-  return findByTitle(ctx.devs, "bypass");
-}
-
-function pickBluGateway(ctx: ShellyContext): CleanDevice | undefined {
-  return findByTitle(ctx.devs, "blu gateway") ?? findByTitle(ctx.devs, "blu gw");
+function pickBluGateway(ctx: ShellyCtx): Device | undefined {
+  return find(ctx.devs, "gateway");
 }
 
 /* ───────────────────────── Shelly: главный сборщик ──────────────────────── */
 
-function recommendShelly(catalog: CleanCatalog, s: Scenario): Recommendation {
+function recommendShelly(catalog: Catalog, s: Scenario): Recommendation {
   const devs = catalog.devices.filter((d) => d.vendor === "shelly");
   const items: PickedItem[] = [];
   const gaps: string[] = [];
   const notes: string[] = [];
-  const ctx: ShellyContext = { devs, s, notes, gaps };
+  const ctx: ShellyCtx = { devs, s, notes, gaps };
 
   let usesBlu = false;
 
   // ── Свет (вкл/выкл) ─────────────────────────────────────────
   if (s.lightPoints > 0) {
-    const channelsAvailable = s.lightPoints; // мы выберем устройство, потом распределим по каналам
-    const dev = pickLightRelay(ctx, channelsAvailable);
+    const dev = pickLightRelay(ctx, s.lightPoints);
     if (dev) {
       const qty = unitsNeeded(s.lightPoints, dev.channels || 1);
       add(items, dev, qty, `освещение: ${s.lightPoints} групп`);
-      // Bypass для 1L/2L
       if (s.noNeutral) {
         const bp = pickBypass(ctx);
         if (bp) add(items, bp, s.lightPoints, "Shelly Bypass для линий <30 Вт без нейтрали");
@@ -336,26 +266,26 @@ function recommendShelly(catalog: CleanCatalog, s: Scenario): Recommendation {
     else gaps.push(`Розетки (${s.socketPoints})`);
   }
 
-  // ── Радиаторное отопление: BLU TRV + Starter Kit ────────────
-  if (s.heatingZones > 0) {
+  // ── Радиаторы: BLU TRV ─────────────────────────────────────
+  if (s.radiatorCount > 0) {
     const trv = pickTRV(ctx);
     if (trv) {
-      add(items, trv, s.heatingZones, `радиаторы: ${s.heatingZones} BLU TRV`);
+      add(items, trv, s.radiatorCount, `радиаторы: ${s.radiatorCount} BLU TRV`);
       usesBlu = true;
       notes.push("Радиаторы: батарейные термоголовки Shelly BLU TRV (BLE), требуют BLU Gateway Gen3.");
-    } else gaps.push(`Отопление (${s.heatingZones}): нет BLU TRV в каталоге`);
+    } else gaps.push(`Радиаторы (${s.radiatorCount}): нет BLU TRV в каталоге`);
   }
 
   // ── Тёплый пол: 1PM Mini + Add-on (DS18B20) ─────────────────
   if (s.floorHeatingZones > 0) {
     const relay = pickFloorRelay(ctx);
-    const addon = pickAddOnDS(ctx);
+    const addon = pickAddOn(ctx);
     if (relay) {
       add(items, relay, s.floorHeatingZones, `тёплый пол: реле на ${s.floorHeatingZones} зон`);
       if (addon) {
-        add(items, addon, s.floorHeatingZones, "Plus Add-on с DS18B20 для датчика стяжки");
+        add(items, addon, s.floorHeatingZones, "Shelly AddOn с DS18B20 для датчика стяжки");
       } else {
-        notes.push("Тёплый пол: добавьте Shelly Plus Add-on с DS18B20 для датчика стяжки.");
+        notes.push("Тёплый пол: добавьте Shelly AddOn с DS18B20 для датчика стяжки.");
       }
     } else gaps.push(`Тёплый пол (${s.floorHeatingZones})`);
   }
@@ -365,22 +295,24 @@ function recommendShelly(catalog: CleanCatalog, s: Scenario): Recommendation {
     const dev = pickMotion(ctx);
     if (dev) {
       add(items, dev, s.motionPoints, `движение: ${s.motionPoints} шт`);
-      if (dev.meta.is_blu) usesBlu = true;
+      if ((dev.tech || []).includes("bluetooth")) usesBlu = true;
     } else gaps.push(`Движение (${s.motionPoints})`);
   }
 
-  // ── Антипротечка ────────────────────────────────────────────
-  if (s.leakPoints > 0) {
-    const leak = pickLeak(ctx);
-    if (leak) add(items, leak, s.leakPoints, `протечка: ${s.leakPoints} датчиков`);
-    else gaps.push(`Протечка (${s.leakPoints})`);
-    // Кран перекрытия: рекомендуем 1PM Gen3/4 + внешний привод (у Shelly нет фирменного крана)
-    const valveRelay =
-      findByTitle(devs, "shelly 1pm gen4") ??
-      findByTitle(devs, "shelly 1pm gen3");
+  // ── Антипротечка: 3 × Flood на зону + краны ХВС/ГВС ────────
+  if (s.antiLeakZones > 0) {
+    const flood = pickFlood(ctx);
+    const sensorsTotal = s.antiLeakZones * 3;
+    if (flood) {
+      add(items, flood, sensorsTotal, `антипротечка: ${s.antiLeakZones} зон × 3 датчика (ванна, раковина, стиральная машина)`);
+    } else gaps.push(`Антипротечка (${s.antiLeakZones} зон): нет Shelly Flood в каталоге`);
+
+    const valveRelay = relays(devs, "in_wall")
+      .filter((d) => d.power_metering && (d.channels || 1) === 1)
+      .sort((a, b) => (a.price || Infinity) - (b.price || Infinity))[0];
     if (valveRelay) {
       add(items, valveRelay, 2, "управление кранами ХВС/ГВС (внешний 220В привод)");
-      notes.push("Кран перекрытия воды реализуется внешним 220В-приводом + Shelly 1PM (нет фирменного крана).");
+      notes.push("Кран перекрытия воды: внешний 220В-привод + " + valveRelay.title + " на каждый кран (ХВС и ГВС).");
     }
   }
 
@@ -389,17 +321,8 @@ function recommendShelly(catalog: CleanCatalog, s: Scenario): Recommendation {
     const dev = pickDoorWindow(ctx);
     if (dev) {
       add(items, dev, s.doorPoints, `двери/окна: ${s.doorPoints} датчиков`);
-      if (dev.meta.is_blu) usesBlu = true;
+      if ((dev.tech || []).includes("bluetooth")) usesBlu = true;
     } else gaps.push(`Двери/окна (${s.doorPoints})`);
-  }
-
-  // ── T° / влажность ──────────────────────────────────────────
-  if (s.thPoints > 0) {
-    const dev = pickTH(ctx);
-    if (dev) {
-      add(items, dev, s.thPoints, `T°/влажность: ${s.thPoints} шт`);
-      if (dev.meta.is_blu) usesBlu = true;
-    } else gaps.push(`T°/влажность (${s.thPoints})`);
   }
 
   // ── Мониторинг энергии ──────────────────────────────────────
@@ -420,7 +343,7 @@ function recommendShelly(catalog: CleanCatalog, s: Scenario): Recommendation {
 
   // ── Настенная панель управления ─────────────────────────────
   if (s.needHub || s.installStyle === "panel") {
-    const wd = pickWallDisplay(ctx);
+    const wd = find(devs, "wall display");
     if (wd) add(items, wd, 1, "настенная панель Shelly Wall Display");
     else notes.push("Wall Display не найден в каталоге.");
   } else {
@@ -432,10 +355,8 @@ function recommendShelly(catalog: CleanCatalog, s: Scenario): Recommendation {
 }
 
 /* ════════════════════════════════════════════════════════════════════════
- * HitePRO: оставляем прежнюю наивную логику, но в чистом виде
+ * HitePRO
  * ════════════════════════════════════════════════════════════════════════ */
-
-/* ─────────────────────────── HitePRO helpers ──────────────────────────── */
 
 function htAll(catalog: Catalog): Device[] {
   return catalog.devices.filter((d) => d.vendor === "hitepro");
@@ -449,13 +370,10 @@ function htFind(catalog: Catalog, ...needles: string[]): Device | undefined {
   });
 }
 
-/** Выбор реле освещения: компактные блоки vs DIN-модули. */
 function htPickLightRelay(catalog: Catalog, s: Scenario): Device | undefined {
-  // DIN-rail или большой объект → DIN-4.Relay (4 линии × 16А)
   if (s.installStyle === "din" || s.lightPoints >= 6) {
     return htFind(catalog, "din-4.relay") ?? htFind(catalog, "relay-4m");
   }
-  // Компактные блоки: Relay-1 для одной линии, Relay-2 для двух
   if (s.lightPoints >= 2) {
     return htFind(catalog, "relay-2") ?? htFind(catalog, "relay-1");
   }
@@ -464,7 +382,6 @@ function htPickLightRelay(catalog: Catalog, s: Scenario): Device | undefined {
 
 function htPickDimmer(catalog: Catalog, s: Scenario): Device | undefined {
   if (s.installStyle === "din") {
-    // В каталоге калькулятора нет DIN-4.DIM — падаем на компактный
     return htFind(catalog, "relay-dim") ?? htFind(catalog, "0/1-10v");
   }
   return htFind(catalog, "relay-dim") ?? htFind(catalog, "0/1-10v");
@@ -478,12 +395,10 @@ function htPickRgbw(catalog: Catalog, s: Scenario): Device | undefined {
 }
 
 function htPickHeavyRelay(catalog: Catalog): Device | undefined {
-  // 16А реле — основа сценариев отопления и тёплого пола (по каталогу с.17)
   return htFind(catalog, "relay-16") ?? htFind(catalog, "din-4.relay");
 }
 
 function htPickValveDriver(catalog: Catalog): Device | undefined {
-  // Relay-DRIVE — управление шаровыми кранами / приводами
   return htFind(catalog, "relay-drive");
 }
 
@@ -533,16 +448,16 @@ function recommendHitePro(catalog: Catalog, s: Scenario): Recommendation {
     else gaps.push(`Шторы (${s.curtainPoints})`);
   }
 
-  // ── Отопление: Relay-16A + Smart Air + Gateway (см. каталог с.17, с.50) ─
-  if (s.heatingZones > 0) {
+  // ── Радиаторы: Relay-16A + Smart Air + Gateway ─────────────
+  if (s.radiatorCount > 0) {
     const r = htPickHeavyRelay(catalog);
     const air = htFind(catalog, "smart air");
     if (r) {
-      add(items, r, unitsNeeded(s.heatingZones, r.channels || 1), `отопление: реле котла/насоса (Relay-16A)`);
-      if (air) add(items, air, s.heatingZones, `T°/влажность для климат-сценариев`);
-      notes.push("Отопление HitePRO: Relay-16A + датчик Smart Air + сервер Gateway для сценариев (фирменного термостата нет).");
+      add(items, r, unitsNeeded(s.radiatorCount, r.channels || 1), `отопление: реле котла/насоса (Relay-16A)`);
+      if (air) add(items, air, s.radiatorCount, `T°/влажность для климат-сценариев`);
+      notes.push("Отопление HitePRO: Relay-16A + датчик Smart Air + сервер Gateway для сценариев.");
     } else {
-      gaps.push(`Отопление (${s.heatingZones})`);
+      gaps.push(`Радиаторы (${s.radiatorCount})`);
     }
   }
 
@@ -553,7 +468,7 @@ function recommendHitePro(catalog: Catalog, s: Scenario): Recommendation {
     if (r) {
       add(items, r, unitsNeeded(s.floorHeatingZones, r.channels || 1), `тёплый пол: коммутация (Relay-16A)`);
       if (floor) add(items, floor, s.floorHeatingZones, `датчик температуры пола`);
-      notes.push("Тёплый пол HitePRO: Relay-16A + датчик пола + сервер Gateway (управление по сценарию).");
+      notes.push("Тёплый пол HitePRO: Relay-16A + датчик пола + сервер Gateway.");
     } else {
       gaps.push(`Тёплый пол (${s.floorHeatingZones})`);
     }
@@ -566,15 +481,16 @@ function recommendHitePro(catalog: Catalog, s: Scenario): Recommendation {
     else gaps.push(`Движение (${s.motionPoints})`);
   }
 
-  // ── Антипротечка: Smart Water + Relay-DRIVE для шаровых кранов ──
-  if (s.leakPoints > 0) {
+  // ── Антипротечка: Smart Water × 3 на зону + Relay-DRIVE для кранов ──
+  if (s.antiLeakZones > 0) {
     const water = htFind(catalog, "smart water");
     const drive = htPickValveDriver(catalog);
-    if (water) add(items, water, s.leakPoints, `протечка: ${s.leakPoints} датчиков`);
-    else gaps.push(`Протечка (${s.leakPoints})`);
+    const sensorsTotal = s.antiLeakZones * 3;
+    if (water) add(items, water, sensorsTotal, `антипротечка: ${s.antiLeakZones} зон × 3 датчика (ванна, раковина, стиральная машина)`);
+    else gaps.push(`Антипротечка (${s.antiLeakZones} зон)`);
     if (drive) {
       add(items, drive, 2, `управление шаровыми кранами ХВС/ГВС (Relay-DRIVE + внешний привод)`);
-      notes.push("Кран перекрытия: Relay-DRIVE 12В/220В + внешний моторизированный шаровой кран (фирменного крана нет).");
+      notes.push("Кран перекрытия: Relay-DRIVE + внешний моторизированный шаровой кран.");
     }
   }
 
@@ -585,30 +501,19 @@ function recommendHitePro(catalog: Catalog, s: Scenario): Recommendation {
     else gaps.push(`Двери/окна (${s.doorPoints})`);
   }
 
-  // ── T° / влажность ─────────────────────────────────────────
-  if (s.thPoints > 0) {
-    const th = htFind(catalog, "smart air");
-    if (th) add(items, th, s.thPoints, `T°/влажность: ${s.thPoints} шт`);
-    else gaps.push(`T°/влажность (${s.thPoints})`);
-  }
-
   // ── Сервер УД (Gateway) ─────────────────────────────────────
-  // По каталогу: «Получая радиосигнал от передатчиков, блок управления замыкает цепь».
-  // Без Gateway работают только связки выключатель↔блок.
-  // Сценарии (отопление, протечка, T°/H, движение → свет, удалённое управление) требуют Gateway.
   const needsGateway =
     s.needHub ||
-    s.heatingZones > 0 ||
+    s.radiatorCount > 0 ||
     s.floorHeatingZones > 0 ||
-    s.leakPoints > 0 ||
-    s.thPoints > 0 ||
+    s.antiLeakZones > 0 ||
     s.energyMonitoring;
   if (needsGateway) {
     const hub = htPickHub(catalog, s);
     if (hub) add(items, hub, 1, "сервер умного дома (Gateway/DIN-Gateway)");
     else notes.push("Нужен сервер HiTE PRO Gateway, но он не найден в каталоге.");
   } else {
-    notes.push("HitePRO без сервера: каждая клавиша работает напрямую с блоком (локально, 868 МГц), без приложения и сценариев.");
+    notes.push("HitePRO без сервера: каждая клавиша работает напрямую с блоком (локально, 868 МГц).");
   }
 
   if (s.energyMonitoring) {
@@ -625,7 +530,7 @@ function recommendHitePro(catalog: Catalog, s: Scenario): Recommendation {
 
 export function recommend(catalog: Catalog, vendor: Vendor, s: Scenario): Recommendation {
   if (vendor === "shelly") {
-    return recommendShelly(catalog as CleanCatalog, s);
+    return recommendShelly(catalog, s);
   }
   return recommendHitePro(catalog, s);
 }

@@ -1,0 +1,2066 @@
+{
+  "source": "i-on.pro",
+  "updated": "2026-05-06",
+  "devices": [
+    {
+      "id": "ion:shelly-1",
+      "title": "Shelly 1",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 2026,
+      "image": "https://static.tildacdn.com/tild6237-3565-4534-b639-393035393433/shelly1_new_label.png",
+      "product_types": [
+        "relay"
+      ]
+    },
+    {
+      "id": "ion:shelly-1pm",
+      "title": "Shelly 1PM",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 1900,
+      "image": "https://static.tildacdn.com/tild3937-6164-4538-a162-336539636265/shelly1PM_300.png",
+      "product_types": [
+        "relay",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-2-5",
+      "title": "Shelly 2.5",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi"
+      ],
+      "channels": 2,
+      "power_metering": false,
+      "price": 3518,
+      "image": "https://static.tildacdn.com/stor6666-3164-4934-b166-643362663861/49203536.png",
+      "product_types": [
+        "relay"
+      ]
+    },
+    {
+      "id": "ion:shelly-dimmer-2",
+      "title": "Shelly Dimmer 2",
+      "vendor": "shelly",
+      "category": "dimmer",
+      "type": "dimmer",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 4438,
+      "image": "https://static.tildacdn.com/tild3138-6332-4037-a232-393465396137/shelly-dimmer3-Curre.png",
+      "product_types": [
+        "dimmer"
+      ]
+    },
+    {
+      "id": "ion:shelly-em",
+      "title": "Shelly EM",
+      "vendor": "shelly",
+      "category": "energy_meter",
+      "type": "energy_meter",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi"
+      ],
+      "channels": 0,
+      "power_metering": true,
+      "price": 7666,
+      "image": "https://static.tildacdn.com/tild6366-3735-4662-a637-316636636566/ShellyEM_unit.png",
+      "product_types": [
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-flood",
+      "title": "Shelly Flood",
+      "vendor": "shelly",
+      "category": "sensor",
+      "type": "sensor",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "wifi"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 3882,
+      "image": "https://static.tildacdn.com/tild6365-6437-4438-b634-633866626532/flood.png",
+      "product_types": [
+        "sensor"
+      ]
+    },
+    {
+      "id": "ion:shelly-door-window2",
+      "title": "Shelly Door/Window2",
+      "vendor": "shelly",
+      "category": "sensor",
+      "type": "sensor",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "wifi"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 2838,
+      "image": "https://static.tildacdn.com/tild3163-6632-4234-b161-623030353664/sensor.png",
+      "product_types": [
+        "sensor"
+      ]
+    },
+    {
+      "id": "ion:shelly-bypass",
+      "title": "Shelly Bypass",
+      "vendor": "shelly",
+      "category": "accessory",
+      "type": "accessory",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [],
+      "channels": 0,
+      "power_metering": false,
+      "price": 416,
+      "image": "https://static.tildacdn.com/tild6461-6561-4965-b264-643336666662/shelly_bypass2_x1-10.jpg",
+      "product_types": [
+        "accessory",
+        "bypass"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-1pm",
+      "title": "Shelly Pro 1PM",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "wifi",
+        "lan",
+        "bluetooth"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 10008,
+      "image": "https://static.tildacdn.com/tild6466-6236-4232-b262-366535383636/1_pro_PM-1000x1000.jpg",
+      "product_types": [
+        "relay",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-4pm",
+      "title": "Shelly Pro 4PM",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "bluetooth",
+        "knx",
+        "lan",
+        "wifi"
+      ],
+      "channels": 4,
+      "power_metering": true,
+      "price": 16194,
+      "image": "https://static.tildacdn.com/tild3732-3333-4535-b838-313165666632/shelly_pro_4pm-1000x.jpg",
+      "product_types": [
+        "relay",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-plus-i4",
+      "title": "Shelly Plus i4",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "input",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 2110,
+      "image": "https://static.tildacdn.com/tild6530-6633-4639-b432-306332306661/Shelly_i4_x1-1200x12.jpg",
+      "product_types": [
+        "input"
+      ]
+    },
+    {
+      "id": "ion:shelly-plus-1",
+      "title": "Shelly Plus 1",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 2466,
+      "image": "https://static.tildacdn.com/stor3833-3965-4164-a537-373332356264/75157645.jpg",
+      "product_types": [
+        "relay"
+      ]
+    },
+    {
+      "id": "ion:shelly-plus-1pm",
+      "title": "Shelly Plus 1PM",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 2796,
+      "image": "https://static.tildacdn.com/tild3162-3636-4163-a461-376537663339/shellyplus_1pm_x1-10.jpg",
+      "product_types": [
+        "relay",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-plus-2pm",
+      "title": "Shelly Plus 2PM",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 2,
+      "power_metering": true,
+      "price": 4286,
+      "image": "https://static.tildacdn.com/tild6134-6464-4131-a330-663031643531/2022-07-18_21-38-55.png",
+      "product_types": [
+        "relay",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-motion2",
+      "title": "Shelly Motion2",
+      "vendor": "shelly",
+      "category": "sensor",
+      "type": "sensor",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "wifi"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 7072,
+      "image": "https://static.tildacdn.com/stor3937-3135-4161-b663-313165323838/90771799.png",
+      "product_types": [
+        "sensor"
+      ]
+    },
+    {
+      "id": "ion:shelly-plus-plug-s",
+      "title": "Shelly Plus Plug S",
+      "vendor": "shelly",
+      "category": "smart_plug",
+      "type": "smart_plug",
+      "install": [
+        "wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": true,
+      "price": 3764,
+      "image": "https://static.tildacdn.com/stor6534-3965-4535-b538-383430626638/30293619.jpg",
+      "product_types": [
+        "smart_plug",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-rc-snubber",
+      "title": "Shelly RC snubber",
+      "vendor": "shelly",
+      "category": "accessory",
+      "type": "accessory",
+      "install": [],
+      "tech": [],
+      "channels": 0,
+      "power_metering": false,
+      "price": 350,
+      "image": "https://static.tildacdn.com/stor3061-6431-4562-b161-326238366266/26753938.jpg",
+      "product_types": [
+        "accessory",
+        "rc_snubber"
+      ]
+    },
+    {
+      "id": "ion:shelly-plus-uni",
+      "title": "Shelly Plus Uni",
+      "vendor": "shelly",
+      "category": "sensor",
+      "type": "sensor",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 2079,
+      "image": "https://static.tildacdn.com/stor3136-3864-4562-a464-303831373834/47573583.jpg",
+      "product_types": []
+    },
+    {
+      "id": "ion:shelly-qubino-wave-1",
+      "title": "Shelly Qubino Wave 1",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "zwave"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 3572,
+      "image": "https://static.tildacdn.com/stor6233-6633-4135-a231-313935313535/35428448.jpg",
+      "product_types": [
+        "relay"
+      ]
+    },
+    {
+      "id": "ion:shelly-qubino-wave-1pm",
+      "title": "Shelly Qubino Wave 1PM",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "zwave"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 3828,
+      "image": "https://static.tildacdn.com/stor6564-6432-4331-b638-323035316131/13711207.jpg",
+      "product_types": [
+        "relay",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-qubino-wave-2pm",
+      "title": "Shelly Qubino Wave 2PM",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "zwave"
+      ],
+      "channels": 2,
+      "power_metering": true,
+      "price": 4468,
+      "image": "https://static.tildacdn.com/stor3061-3861-4239-a632-663366313533/96935534.jpg",
+      "product_types": [
+        "relay",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-3em-switch-add-on",
+      "title": "Shelly Pro 3EM Switch Add-on",
+      "vendor": "shelly",
+      "category": "accessory",
+      "type": "accessory",
+      "install": [
+        "din"
+      ],
+      "tech": [],
+      "channels": 0,
+      "power_metering": false,
+      "price": 3528,
+      "image": "https://static.tildacdn.com/stor3031-6637-4265-b839-613065656336/70119414.jpg",
+      "product_types": [
+        "accessory"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-em-50",
+      "title": "Shelly PRO EM - 50",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "energy_meter",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "wifi",
+        "lan",
+        "bluetooth"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 13274,
+      "image": "https://static.tildacdn.com/stor6137-3363-4334-a562-323162653937/76811716.jpg",
+      "product_types": [
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-plus-rgbw-pm",
+      "title": "Shelly Plus RGBW PM",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "rgbw",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 3788,
+      "image": "https://static.tildacdn.com/stor3531-3136-4230-b030-323931616162/95824416.jpg",
+      "product_types": [
+        "rgbw",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-blu-trv-blu-gateway-gen3",
+      "title": "Shelly BLU TRV + BLU Gateway GEN3",
+      "vendor": "shelly",
+      "category": "sensor",
+      "type": "trv",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "bluetooth",
+        "wifi",
+        "zigbee"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 7428,
+      "image": "https://static.tildacdn.com/stor3264-3032-4631-b735-313632636666/40988132.png",
+      "product_types": [
+        "trv"
+      ]
+    },
+    {
+      "id": "ion:shelly-shutter",
+      "title": "Shelly Shutter",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "shutter",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 3882,
+      "image": "https://static.tildacdn.com/stor6139-3066-4465-b437-613939373235/85615197.png",
+      "product_types": [
+        "shutter"
+      ]
+    },
+    {
+      "id": "ion:shelly-1l-gen3",
+      "title": "Shelly 1L GEN3",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 4708,
+      "image": "https://static.tildacdn.com/stor6632-3936-4739-b937-303133333234/45437026.jpg",
+      "product_types": [
+        "relay"
+      ]
+    },
+    {
+      "id": "ion:shelly-plus-dimmer-0-10v",
+      "title": "Shelly Plus Dimmer 0-10V",
+      "vendor": "shelly",
+      "category": "dimmer",
+      "type": "dimmer",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 2466,
+      "image": "https://static.tildacdn.com/stor6632-3332-4464-a162-326239373065/12801308.jpg",
+      "product_types": [
+        "dimmer"
+      ]
+    },
+    {
+      "id": "ion:shelly-plus-i4-dc",
+      "title": "Shelly Plus i4 DC",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "input",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 2110,
+      "image": "https://static.tildacdn.com/stor6565-6435-4862-b539-386638363833/91861271.jpg",
+      "product_types": [
+        "input"
+      ]
+    },
+    {
+      "id": "ion:shelly-dimmer-gen3",
+      "title": "Shelly Dimmer GEN3",
+      "vendor": "shelly",
+      "category": "dimmer",
+      "type": "dimmer",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth",
+        "knx"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 5009,
+      "image": "https://static.tildacdn.com/stor3435-6364-4163-a137-316564363436/28675173.png",
+      "product_types": [
+        "dimmer"
+      ]
+    },
+    {
+      "id": "ion:shelly-1-mini-gen3",
+      "title": "Shelly 1 Mini Gen3",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth",
+        "knx"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 1800,
+      "image": "https://static.tildacdn.com/stor3864-3437-4966-a263-373937323162/13699519.jpg",
+      "product_types": [
+        "relay"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-dimmer-0-1-10v",
+      "title": "Shelly Pro Dimmer 0/1-10V",
+      "vendor": "shelly",
+      "category": "dimmer",
+      "type": "dimmer",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "bluetooth",
+        "knx",
+        "lan",
+        "wifi"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 6963,
+      "image": "https://static.tildacdn.com/stor6534-6632-4065-b865-336132366666/95789082.png",
+      "product_types": [
+        "dimmer"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-rgbw-pm",
+      "title": "Shelly Pro RGBW PM",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "rgbw",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "bluetooth",
+        "knx",
+        "lan",
+        "wifi"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 6543,
+      "image": "https://static.tildacdn.com/stor6531-3136-4366-b436-396232623739/98530371.png",
+      "product_types": [
+        "rgbw",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-gas-cng",
+      "title": "Shelly Gas CNG",
+      "vendor": "shelly",
+      "category": "sensor",
+      "type": "sensor",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 6767,
+      "image": "https://static.tildacdn.com/stor6230-3830-4164-b935-663434363664/38047784.png",
+      "product_types": [
+        "sensor"
+      ]
+    },
+    {
+      "id": "ion:shelly-gas-lpg",
+      "title": "Shelly Gas LPG",
+      "vendor": "shelly",
+      "category": "sensor",
+      "type": "sensor",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 8024,
+      "image": "https://static.tildacdn.com/stor3066-6338-4639-a537-393536353832/20713629.png",
+      "product_types": [
+        "sensor"
+      ]
+    },
+    {
+      "id": "ion:shelly-blu-door-window",
+      "title": "Shelly BLU Door/Window",
+      "vendor": "shelly",
+      "category": "sensor",
+      "type": "sensor",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 2796,
+      "image": "https://static.tildacdn.com/stor3462-6632-4139-a139-376366356431/85eb6e8c20160a2a915e3d9f7b86bb24.png",
+      "product_types": [
+        "sensor"
+      ]
+    },
+    {
+      "id": "ion:shelly-blu-button-1",
+      "title": "Shelly Blu Button 1",
+      "vendor": "shelly",
+      "category": "button",
+      "type": "button",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 2466,
+      "image": "https://static.tildacdn.com/stor6161-3930-4430-b531-643765636266/ed82c3c9e71debed656631922fcbdd9f.png",
+      "product_types": [
+        "button"
+      ]
+    },
+    {
+      "id": "ion:din-2-5",
+      "title": "Кронштейн DIN 2.5 одинарный",
+      "vendor": "shelly",
+      "category": "accessory",
+      "type": "accessory",
+      "install": [],
+      "tech": [],
+      "channels": 2,
+      "power_metering": false,
+      "price": 400,
+      "image": "https://static.tildacdn.com/stor3461-6437-4230-b364-633836663030/95792431.png",
+      "product_types": [
+        "accessory"
+      ]
+    },
+    {
+      "id": "ion:din-2-5",
+      "title": "Кронштейн DIN 2.5 двойной",
+      "vendor": "shelly",
+      "category": "accessory",
+      "type": "accessory",
+      "install": [],
+      "tech": [],
+      "channels": 2,
+      "power_metering": false,
+      "price": 500,
+      "image": "https://static.tildacdn.com/stor6134-6334-4131-a533-643566386362/88297546.png",
+      "product_types": [
+        "accessory"
+      ]
+    },
+    {
+      "id": "ion:din-plus",
+      "title": "Кронштейн DIN PLUS одинарный",
+      "vendor": "shelly",
+      "category": "accessory",
+      "type": "accessory",
+      "install": [],
+      "tech": [],
+      "channels": 0,
+      "power_metering": false,
+      "price": 400,
+      "image": "https://static.tildacdn.com/stor3233-6463-4964-b835-626564343639/48722508.png",
+      "product_types": [
+        "accessory"
+      ]
+    },
+    {
+      "id": "ion:din-plus",
+      "title": "Кронштейн DIN PLUS двойной",
+      "vendor": "shelly",
+      "category": "accessory",
+      "type": "accessory",
+      "install": [],
+      "tech": [],
+      "channels": 0,
+      "power_metering": false,
+      "price": 500,
+      "image": "https://static.tildacdn.com/stor3531-3561-4938-b333-393661363331/54256931.png",
+      "product_types": [
+        "accessory"
+      ]
+    },
+    {
+      "id": "ion:shelly-duo-gu10-ww-cw",
+      "title": "Shelly Duo GU10 - WW/CW",
+      "vendor": "shelly",
+      "category": "bulb",
+      "type": "bulb",
+      "install": [],
+      "tech": [],
+      "channels": 0,
+      "power_metering": false,
+      "price": 1970,
+      "image": "https://static.tildacdn.com/stor3666-6230-4434-b166-646236326237/0473e52e55ba79a5628ccf9f3ba6e2de.png",
+      "product_types": [
+        "bulb"
+      ]
+    },
+    {
+      "id": "ion:shelly-outdoor-plug-s-gen3",
+      "title": "Shelly Outdoor Plug S GEN3",
+      "vendor": "shelly",
+      "category": "smart_plug",
+      "type": "smart_plug",
+      "install": [
+        "wall"
+      ],
+      "tech": [
+        "bluetooth",
+        "knx",
+        "wifi",
+        "matter"
+      ],
+      "channels": 0,
+      "power_metering": true,
+      "price": 3614,
+      "image": "https://static.tildacdn.com/stor3562-6166-4963-a230-613032333165/14fc94db9b42b7f5cdf8ef225f0897b3.jpg",
+      "product_types": [
+        "smart_plug",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-plug-s-mtr-gen3",
+      "title": "Shelly Plug S MTR GEN3",
+      "vendor": "shelly",
+      "category": "smart_plug",
+      "type": "smart_plug",
+      "install": [
+        "wall"
+      ],
+      "tech": [
+        "bluetooth",
+        "knx",
+        "wifi",
+        "matter"
+      ],
+      "channels": 0,
+      "power_metering": true,
+      "price": 2777,
+      "image": "https://static.tildacdn.com/stor3061-3531-4936-a533-353237653331/3f4e7d55f1623b60ecbd9e5c3f57d531.png",
+      "product_types": [
+        "smart_plug",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-plus-plug-uk",
+      "title": "Shelly Plus Plug UK",
+      "vendor": "shelly",
+      "category": "smart_plug",
+      "type": "smart_plug",
+      "install": [
+        "wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": true,
+      "price": 2777,
+      "image": "https://static.tildacdn.com/stor3234-3061-4566-a365-626334663439/a08fb27bd8e65be20c23bf3b2576e04e.jpg",
+      "product_types": [
+        "smart_plug",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-vintage-e27-a60",
+      "title": "Shelly Vintage E27 A60",
+      "vendor": "shelly",
+      "category": "bulb",
+      "type": "bulb",
+      "install": [],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 1661,
+      "image": "https://static.tildacdn.com/stor6339-3135-4666-b836-366461383131/7df6ac3c7781c207b7f08014847de159.jpg",
+      "product_types": [
+        "bulb"
+      ]
+    },
+    {
+      "id": "ion:shelly-vintage-e27-g125",
+      "title": "Shelly Vintage E27 G125",
+      "vendor": "shelly",
+      "category": "bulb",
+      "type": "bulb",
+      "install": [],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 2916,
+      "image": "https://static.tildacdn.com/stor6437-6533-4139-b537-626139313238/2f939ba4b30b40eea3e066cbb0541338.png",
+      "product_types": [
+        "bulb"
+      ]
+    },
+    {
+      "id": "ion:shelly-vintage-e27-st64",
+      "title": "Shelly Vintage E27 ST64",
+      "vendor": "shelly",
+      "category": "bulb",
+      "type": "bulb",
+      "install": [],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 1661,
+      "image": "https://static.tildacdn.com/stor3232-6466-4037-b666-613530333661/d4675c9aff2cffeb729993965117774c.png",
+      "product_types": [
+        "bulb"
+      ]
+    },
+    {
+      "id": "ion:shelly-wall-display-x-2",
+      "title": "Shelly Wall Display X 2",
+      "vendor": "shelly",
+      "category": "display",
+      "type": "display",
+      "install": [
+        "wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 23005,
+      "image": "https://static.tildacdn.com/stor6166-6533-4461-b931-373466616430/3ccc0624a0924be983624aea045e4f17.png",
+      "product_types": [
+        "display"
+      ]
+    },
+    {
+      "id": "ion:shelly-wall-display-x-2-blu-h-t",
+      "title": "Shelly Wall Display X 2 + BLU H&amp; T",
+      "vendor": "shelly",
+      "category": "display",
+      "type": "display",
+      "install": [
+        "wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 23842,
+      "image": "https://static.tildacdn.com/stor3737-3564-4838-b365-336564336336/60988888.png",
+      "product_types": [
+        "display"
+      ]
+    },
+    {
+      "id": "ion:shelly-wall-display",
+      "title": "Shelly Wall Display",
+      "vendor": "shelly",
+      "category": "display",
+      "type": "display",
+      "install": [
+        "wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 16603,
+      "image": "https://static.tildacdn.com/stor3337-6466-4434-a238-333732663435/b94ec4a1a7b92bb405b2171f89e60ee7.jpg",
+      "product_types": [
+        "display"
+      ]
+    },
+    {
+      "id": "ion:shelly-blu-button-tough-1",
+      "title": "Shelly BLU Button Tough 1",
+      "vendor": "shelly",
+      "category": "button",
+      "type": "button",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 2358,
+      "image": "https://static.tildacdn.com/stor6537-6365-4433-b938-643238326236/556ff91e65a9a7b287c6d0d2a92a7df9.png",
+      "product_types": [
+        "button"
+      ]
+    },
+    {
+      "id": "ion:shelly-blu-rc-button",
+      "title": "Shelly BLU RC Button",
+      "vendor": "shelly",
+      "category": "button",
+      "type": "button",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 2466,
+      "image": "https://static.tildacdn.com/stor3137-3066-4161-b936-646437383538/11697098.webp",
+      "product_types": [
+        "button"
+      ]
+    },
+    {
+      "id": "ion:shelly-duo-e27-rgbw",
+      "title": "Shelly Duo E27 - RGBW",
+      "vendor": "shelly",
+      "category": "bulb",
+      "type": "bulb",
+      "install": [],
+      "tech": [
+        "wifi"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 1661,
+      "image": "https://static.tildacdn.com/stor3337-6163-4134-b663-633231616235/06bdd73432980eaa865b5b341a87e81d.jpg",
+      "product_types": [
+        "bulb"
+      ]
+    },
+    {
+      "id": "ion:shelly-duo-e27-ww-cw",
+      "title": "Shelly Duo E27 - WW/CW",
+      "vendor": "shelly",
+      "category": "bulb",
+      "type": "bulb",
+      "install": [],
+      "tech": [
+        "wifi"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 1661,
+      "image": "https://static.tildacdn.com/stor6438-3834-4233-a232-383961633434/3d111d263e235902b3628e3836a75e8d.jpg",
+      "product_types": [
+        "bulb"
+      ]
+    },
+    {
+      "id": "ion:shelly-duo-gu10-rgbw",
+      "title": "Shelly Duo GU10 - RGBW",
+      "vendor": "shelly",
+      "category": "bulb",
+      "type": "bulb",
+      "install": [],
+      "tech": [
+        "wifi"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 1661,
+      "image": "https://static.tildacdn.com/stor3732-3839-4365-a232-636431636561/f91781a52b07da5878499598db2cfea9.png",
+      "product_types": [
+        "bulb"
+      ]
+    },
+    {
+      "id": "ion:shelly-h-t-gen-3",
+      "title": "Shelly H&amp;T Gen 3",
+      "vendor": "shelly",
+      "category": "sensor",
+      "type": "sensor",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 4451,
+      "image": "https://static.tildacdn.com/stor6239-6238-4363-a533-653564326564/22727093.png",
+      "product_types": [
+        "sensor"
+      ]
+    },
+    {
+      "id": "ion:shelly-flood-gen4",
+      "title": "Shelly Flood GEN4",
+      "vendor": "shelly",
+      "category": "sensor",
+      "type": "sensor",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth",
+        "zigbee",
+        "matter"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 3474,
+      "image": "https://static.tildacdn.com/stor3362-3736-4537-b939-633935336332/5f09dc8f5723fccc1ac480adf5b38c04.jpg",
+      "product_types": [
+        "sensor"
+      ]
+    },
+    {
+      "id": "ion:shelly-h-t",
+      "title": "Shelly H&amp;T",
+      "vendor": "shelly",
+      "category": "sensor",
+      "type": "sensor",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "wifi"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 3706,
+      "image": "https://static.tildacdn.com/stor6339-3835-4066-a264-363466616230/fbd575913f4f4cd4760da556797555a2.png",
+      "product_types": [
+        "sensor"
+      ]
+    },
+    {
+      "id": "ion:shelly-plus-smoke-alarm",
+      "title": "Shelly Plus Smoke Alarm",
+      "vendor": "shelly",
+      "category": "sensor",
+      "type": "sensor",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 6264,
+      "image": "https://static.tildacdn.com/stor3337-3661-4630-b661-343736376163/f106943fbbc8dfc69d4295418b6964a0.png",
+      "product_types": [
+        "sensor"
+      ]
+    },
+    {
+      "id": "ion:temperature-sensor-ds18b20",
+      "title": "Temperature sensor DS18B20",
+      "vendor": "shelly",
+      "category": "sensor",
+      "type": "sensor",
+      "install": [],
+      "tech": [],
+      "channels": 0,
+      "power_metering": false,
+      "price": 684,
+      "image": "https://static.tildacdn.com/stor3439-3534-4439-b566-303735326462/44143386.png",
+      "product_types": [
+        "sensor"
+      ]
+    },
+    {
+      "id": "ion:shelly-blu-h-t",
+      "title": "Shelly BLU H&amp;T",
+      "vendor": "shelly",
+      "category": "sensor",
+      "type": "sensor",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 2498,
+      "image": "https://static.tildacdn.com/stor6563-6634-4233-b764-376164333963/283c9b7ae3a2ea03a970531f09b4402f.png",
+      "product_types": [
+        "sensor"
+      ]
+    },
+    {
+      "id": "ion:shelly-blu-motion",
+      "title": "Shelly BLU Motion",
+      "vendor": "shelly",
+      "category": "sensor",
+      "type": "sensor",
+      "install": [
+        "wireless"
+      ],
+      "tech": [
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 3294,
+      "image": "https://static.tildacdn.com/stor3836-3431-4439-b265-316232663135/3ccff23bb68be86effab0ed50fb7d8ae.png",
+      "product_types": [
+        "sensor"
+      ]
+    },
+    {
+      "id": "ion:shelly-1-gen3",
+      "title": "Shelly 1 GEN3",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "bluetooth",
+        "knx",
+        "wifi"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 2162,
+      "image": "https://static.tildacdn.com/stor3139-3432-4534-a564-646235306433/c0d43cd3bf017bed8808040af6ab0d53.png",
+      "product_types": [
+        "relay"
+      ]
+    },
+    {
+      "id": "ion:shelly-1-gen4",
+      "title": "Shelly 1 GEN4",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "bluetooth",
+        "knx",
+        "wifi",
+        "zigbee"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 3498,
+      "image": "https://static.tildacdn.com/stor6665-3733-4264-b164-313765623732/421ccdd8034c122b7bad71f26d78e332.png",
+      "product_types": [
+        "relay"
+      ]
+    },
+    {
+      "id": "ion:shelly-1pm-gen3",
+      "title": "Shelly 1PM GEN3",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth",
+        "knx"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 3102,
+      "image": "https://static.tildacdn.com/stor3666-6462-4163-b036-346363663832/3fd1a6e9a2a21aac36cc17bbce5ceb94.png",
+      "product_types": [
+        "relay",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-1pm-gen4",
+      "title": "Shelly 1PM GEN4",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth",
+        "zigbee",
+        "matter",
+        "knx"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 3970,
+      "image": "https://static.tildacdn.com/stor6563-6362-4164-b166-383761323432/89777503.webp",
+      "product_types": [
+        "relay",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-1pm-mini-gen3",
+      "title": "Shelly 1PM Mini Gen3",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth",
+        "matter",
+        "knx"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 2024,
+      "image": "https://static.tildacdn.com/stor3131-3737-4832-b933-626335626336/52eb722604e315f5ee8a1f10ea9ef710.png",
+      "product_types": [
+        "relay",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-1pm-mini-gen4",
+      "title": "Shelly 1PM Mini GEN4",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth",
+        "zigbee",
+        "matter",
+        "knx"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 2441,
+      "image": "https://static.tildacdn.com/stor3261-3361-4038-b536-343565643063/eb35ea2e048695f5ef7ced116b00eacf.png",
+      "product_types": [
+        "relay",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-2l-gen3-bypass-included",
+      "title": "Shelly 2L GEN3 Bypass included",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth",
+        "knx"
+      ],
+      "channels": 2,
+      "power_metering": false,
+      "price": 4869,
+      "image": "https://static.tildacdn.com/stor3762-3134-4965-a365-633430346362/66505793.png",
+      "product_types": [
+        "relay"
+      ]
+    },
+    {
+      "id": "ion:shelly-2pm-gen3",
+      "title": "Shelly 2PM GEN3",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth",
+        "knx"
+      ],
+      "channels": 2,
+      "power_metering": true,
+      "price": 4768,
+      "image": "https://static.tildacdn.com/stor3562-6161-4432-b434-373064626564/74d92188fc5cfd454fcd43460aaafbca.png",
+      "product_types": [
+        "relay",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-2pm-gen4",
+      "title": "Shelly 2PM GEN4",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth",
+        "zigbee",
+        "matter",
+        "knx"
+      ],
+      "channels": 2,
+      "power_metering": true,
+      "price": 5760,
+      "image": "https://static.tildacdn.com/stor6266-3438-4661-b363-356338613236/88b66332356208cbac33b62c023acd7c.png",
+      "product_types": [
+        "relay",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-3em-63t-gen3",
+      "title": "Shelly 3EM-63T GEN3",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "energy_meter",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 11022,
+      "image": "https://static.tildacdn.com/stor3037-6338-4039-a137-336564313431/813430fdb82374182a3a4bdfb58485a8.png",
+      "product_types": [
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-3em-63w-gen3",
+      "title": "Shelly 3EM-63W GEN3",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "energy_meter",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 11022,
+      "image": "https://static.tildacdn.com/stor3463-3735-4262-b862-336364383036/16552786.png",
+      "product_types": [
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-50a-current-transformer-clamp",
+      "title": "Shelly 50A current transformer clamp",
+      "vendor": "shelly",
+      "category": "accessory",
+      "type": "accessory",
+      "install": [],
+      "tech": [],
+      "channels": 0,
+      "power_metering": false,
+      "price": 1804,
+      "image": "https://static.tildacdn.com/stor3331-3135-4262-a137-613633636638/51465670.png",
+      "product_types": [
+        "accessory"
+      ]
+    },
+    {
+      "id": "ion:shelly-em-mini-gen4",
+      "title": "Shelly EM Mini GEN4",
+      "vendor": "shelly",
+      "category": "energy_meter",
+      "type": "energy_meter",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth",
+        "zigbee",
+        "matter"
+      ],
+      "channels": 0,
+      "power_metering": true,
+      "price": 2302,
+      "image": "https://static.tildacdn.com/stor3364-3939-4735-a266-633338633538/8c3cab56475e3849168073b77ff0578e.png",
+      "product_types": [
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-i4-gen3",
+      "title": "Shelly i4 GEN3",
+      "vendor": "shelly",
+      "category": "controller",
+      "type": "input",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth",
+        "knx"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 2216,
+      "image": "https://static.tildacdn.com/stor3538-6662-4539-a533-653631376330/b76c82a23d8d660bfcf34e5925af2b01.png",
+      "product_types": [
+        "input"
+      ]
+    },
+    {
+      "id": "ion:shelly-lora-add-on",
+      "title": "Shelly LoRa Add-on",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "lora",
+      "install": [
+        "addon"
+      ],
+      "tech": [
+        "lora"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 5476,
+      "image": "https://static.tildacdn.com/stor6633-3962-4039-b530-663666336433/981871f9c8309a1715f290024ebb4cb0.png",
+      "product_types": [
+        "lora"
+      ]
+    },
+    {
+      "id": "ion:shelly-addon",
+      "title": "Shelly AddOn",
+      "vendor": "shelly",
+      "category": "accessory",
+      "type": "addon",
+      "install": [
+        "addon"
+      ],
+      "tech": [],
+      "channels": 0,
+      "power_metering": false,
+      "price": 1883,
+      "image": "https://static.tildacdn.com/stor3034-3836-4736-b032-316334303037/c9f7a6da0ca9c916815df11a2f1ca355.png",
+      "product_types": [
+        "addon"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-1",
+      "title": "Shelly Pro 1",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "wifi",
+        "lan",
+        "bluetooth",
+        "knx"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 6906,
+      "image": "https://static.tildacdn.com/stor3238-6164-4533-b733-376264613933/a6591fbb654987d25e962f24a3e7cf9a.png",
+      "product_types": [
+        "relay"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-2",
+      "title": "Shelly Pro 2",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "wifi",
+        "lan",
+        "bluetooth",
+        "knx"
+      ],
+      "channels": 2,
+      "power_metering": false,
+      "price": 9195,
+      "image": "https://static.tildacdn.com/stor6164-3732-4264-b164-303232313433/d5a072f6f2dc309eaae8843542774b12.png",
+      "product_types": [
+        "relay"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-2pm",
+      "title": "Shelly Pro 2PM",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "wifi",
+        "lan",
+        "bluetooth",
+        "knx"
+      ],
+      "channels": 2,
+      "power_metering": true,
+      "price": 13648,
+      "image": "https://static.tildacdn.com/stor6364-3335-4565-b664-343161373566/ed077220133f32121f5f2a9c779a97df.png",
+      "product_types": [
+        "relay",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-3",
+      "title": "Shelly Pro 3",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "wifi",
+        "lan",
+        "bluetooth",
+        "knx"
+      ],
+      "channels": 3,
+      "power_metering": false,
+      "price": 11564,
+      "image": "https://static.tildacdn.com/stor3637-3135-4639-a632-633930386364/0c4af1f8766525ed3cd0416b5bc33315.png",
+      "product_types": [
+        "relay"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-3em-120a",
+      "title": "Shelly Pro 3EM 120A",
+      "vendor": "shelly",
+      "category": "energy_meter",
+      "type": "energy_meter",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": true,
+      "price": 16728,
+      "image": "https://static.tildacdn.com/stor3739-3065-4530-b636-393739636236/40259884.webp",
+      "product_types": [
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-3em-3ct63",
+      "title": "Shelly Pro 3EM-3CT63",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "energy_meter",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 15208,
+      "image": "https://static.tildacdn.com/stor3738-6532-4735-b430-333637333637/00ef3f4060992972ecd14cd31485ee5d.png",
+      "product_types": [
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-3em-400a",
+      "title": "Shelly Pro 3EM 400A",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "energy_meter",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 31948,
+      "image": "https://static.tildacdn.com/stor6432-3037-4132-b430-313965396233/12789257.png",
+      "product_types": [
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-dimmer-1pm",
+      "title": "Shelly Pro Dimmer 1PM",
+      "vendor": "shelly",
+      "category": "dimmer",
+      "type": "dimmer",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "wifi",
+        "lan",
+        "bluetooth",
+        "knx"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 7800,
+      "image": "https://static.tildacdn.com/stor6133-3531-4566-a338-633164313931/5633768420a4080ed7fa4e885860d0eb.png",
+      "product_types": [
+        "dimmer",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-dimmer-2pm",
+      "title": "Shelly Pro Dimmer 2PM",
+      "vendor": "shelly",
+      "category": "dimmer",
+      "type": "dimmer",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "wifi",
+        "lan",
+        "bluetooth",
+        "knx"
+      ],
+      "channels": 2,
+      "power_metering": true,
+      "price": 10736,
+      "image": "https://static.tildacdn.com/stor6639-3330-4238-a130-316431623530/fba6e37f7262d198353420c91917b6b0.png",
+      "product_types": [
+        "dimmer",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-dual-cover-shutter-pm",
+      "title": "Shelly Pro Dual Cover/Shutter PM",
+      "vendor": "shelly",
+      "category": "shutter",
+      "type": "shutter",
+      "install": [
+        "din"
+      ],
+      "tech": [
+        "wifi",
+        "lan",
+        "bluetooth",
+        "knx"
+      ],
+      "channels": 2,
+      "power_metering": true,
+      "price": 13659,
+      "image": "https://static.tildacdn.com/stor3962-6233-4134-b666-653539346365/96ca650e312f3f31390b9bcf6266502f.png",
+      "product_types": [
+        "shutter",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-pro-lan-switch",
+      "title": "Shelly Pro LAN Switch",
+      "vendor": "shelly",
+      "category": "accessory",
+      "type": "switch",
+      "install": [
+        "din"
+      ],
+      "tech": [],
+      "channels": 0,
+      "power_metering": false,
+      "price": 6139,
+      "image": "https://static.tildacdn.com/stor3134-3134-4634-b633-316232656165/14284e006b522ca2bdf920bc41ff9eea.png",
+      "product_types": [
+        "switch"
+      ]
+    },
+    {
+      "id": "ion:dali-dimmer-gen3",
+      "title": "DALI Dimmer Gen3",
+      "vendor": "shelly",
+      "category": "dimmer",
+      "type": "dimmer",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth",
+        "knx",
+        "dali"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 7871,
+      "image": "https://static.tildacdn.com/stor3231-6330-4666-b938-663639396362/65366b07a59185fc1a3a0be294847d55.png",
+      "product_types": [
+        "dimmer"
+      ]
+    },
+    {
+      "id": "ion:shelly-dimmer-0-1-10v-pm-gen3",
+      "title": "Shelly Dimmer 0/1- 10V PM GEN3",
+      "vendor": "shelly",
+      "category": "dimmer",
+      "type": "dimmer",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth",
+        "knx"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 2818,
+      "image": "https://static.tildacdn.com/stor3266-3732-4235-b864-323066626165/f1f7909a2941bf89043daa4e25a5ed61.png",
+      "product_types": [
+        "dimmer",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-plus-pm-mini",
+      "title": "Shelly Plus PM Mini",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "relay",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "bluetooth"
+      ],
+      "channels": 1,
+      "power_metering": true,
+      "price": 2288,
+      "image": "https://static.tildacdn.com/stor3333-3334-4562-b966-656331623432/76cbaedb570fad21e4a1fc6050d8a141.png",
+      "product_types": [
+        "relay",
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-em-gen3",
+      "title": "Shelly EM GEN3",
+      "vendor": "shelly",
+      "category": "energy_meter",
+      "type": "energy_meter",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth",
+        "knx"
+      ],
+      "channels": 0,
+      "power_metering": true,
+      "price": 8637,
+      "image": "https://static.tildacdn.com/stor6161-6230-4032-b136-333361326261/003d278d57fd94697de465223e03192d.png",
+      "product_types": [
+        "energy_meter"
+      ]
+    },
+    {
+      "id": "ion:shelly-rgbw2",
+      "title": "Shelly RGBW2",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "rgbw",
+      "install": [
+        "in_wall"
+      ],
+      "tech": [
+        "wifi"
+      ],
+      "channels": 1,
+      "power_metering": false,
+      "price": 3764,
+      "image": "https://static.tildacdn.com/stor3564-3063-4165-b538-626131326330/7a609efbf3a6654e683ff173bc82218e.png",
+      "product_types": [
+        "rgbw"
+      ]
+    },
+    {
+      "id": "ion:shelly-120a-current-transformer-clamp",
+      "title": "Shelly 120A current transformer clamp",
+      "vendor": "shelly",
+      "category": "relay",
+      "type": "clamp",
+      "install": [],
+      "tech": [],
+      "channels": 1,
+      "power_metering": false,
+      "price": 2288,
+      "image": "https://static.tildacdn.com/stor6466-3831-4864-a532-366339346333/58571513.webp",
+      "product_types": [
+        "clamp"
+      ]
+    },
+    {
+      "id": "ion:shelly-blu-gateway",
+      "title": "Shelly BLU Gateway",
+      "vendor": "shelly",
+      "category": "accessory",
+      "type": "gateway",
+      "install": [
+        "usb"
+      ],
+      "tech": [
+        "wifi",
+        "bluetooth"
+      ],
+      "channels": 0,
+      "power_metering": false,
+      "price": 2466,
+      "image": "https://static.tildacdn.com/stor3962-6631-4130-b431-633539343361/44721b4b1294ac3db699b182189eb489.png",
+      "product_types": [
+        "gateway"
+      ]
+    },
+    {
+      "id": "ion:shelly-dn-hld",
+      "title": "Shelly DN-HLD",
+      "vendor": "shelly",
+      "category": "accessory",
+      "type": "accessory",
+      "install": [
+        "din"
+      ],
+      "tech": [],
+      "channels": 0,
+      "power_metering": false,
+      "price": 150,
+      "image": "https://static.tildacdn.com/stor6335-3265-4539-b533-303034363466/d7c31a26a26d8d1cd2d4d407c590364d.webp",
+      "product_types": [
+        "accessory"
+      ]
+    },
+    {
+      "id": "ion:shelly-dn-hld-plus",
+      "title": "Shelly DN-HLD Plus",
+      "vendor": "shelly",
+      "category": "accessory",
+      "type": "accessory",
+      "install": [
+        "din"
+      ],
+      "tech": [],
+      "channels": 0,
+      "power_metering": false,
+      "price": 150,
+      "image": "https://static.tildacdn.com/stor3866-6331-4032-b637-643136663630/e739181c41ad00f51f99b27876923a91.webp",
+      "product_types": [
+        "accessory"
+      ]
+    }
+  ]
+}

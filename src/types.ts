@@ -32,6 +32,12 @@ export interface Device {
   voltage: string | null;
   protocol: string | null;
   raw_attributes: Record<string, string>;
+  // i-on.pro extended fields
+  install?: string[];
+  tech?: string[];
+  price?: number;
+  product_types?: string[];
+  category?: string;
 }
 
 export interface Catalog {
@@ -50,12 +56,11 @@ export interface Scenario {
   rgbwPoints: number;         // RGBW-ленты
   socketPoints: number;       // умные розетки
   curtainPoints: number;      // приводы штор
-  heatingZones: number;       // отопление (термоголовки/реле котла)
+  radiatorCount: number;      // кол-во радиаторов (термоголовки)
   floorHeatingZones: number;  // тёплый пол (термостаты с датчиком пола)
   motionPoints: number;       // датчики движения
-  leakPoints: number;         // антипротечка (датчики)
+  antiLeakZones: number;      // антипротечка (зоны: 3 датчика на зону — ванна, раковина, стиральная машина)
   doorPoints: number;         // охранка двери / окна
-  thPoints: number;           // температура+влажность
   needHub: boolean;           // нужен ли центральный сервер
   energyMonitoring: boolean;  // приоритет приборов с измерением мощности
 

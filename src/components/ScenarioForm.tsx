@@ -7,17 +7,16 @@ interface Props {
 }
 
 const FIELDS: { key: keyof Scenario; label: string; hint?: string; max?: number }[] = [
-  { key: "lightPoints", label: "Свет (групп вкл/выкл)", max: 30 },
-  { key: "dimmerPoints", label: "Диммируемый свет (групп)", max: 20 },
-  { key: "rgbwPoints", label: "RGBW-ленты", max: 10 },
-  { key: "socketPoints", label: "Умные розетки", max: 30 },
-  { key: "curtainPoints", label: "Приводы штор", max: 20 },
-  { key: "heatingZones", label: "Отопление (зон)", max: 20 },
-  { key: "floorHeatingZones", label: "Тёплый пол (зон)", max: 20 },
-  { key: "motionPoints", label: "Датчики движения", max: 20 },
-  { key: "leakPoints", label: "Датчики протечки", max: 20 },
-  { key: "doorPoints", label: "Охранка двери/окна", max: 20 },
-  { key: "thPoints", label: "T° / влажность (точек)", max: 20 },
+  { key: "lightPoints", label: "Свет (групп вкл/выкл)", max: 150 },
+  { key: "dimmerPoints", label: "Диммируемый свет (групп)", max: 150 },
+  { key: "rgbwPoints", label: "RGBW-ленты", max: 150 },
+  { key: "socketPoints", label: "Умные розетки", max: 150 },
+  { key: "curtainPoints", label: "Приводы штор", max: 150 },
+  { key: "radiatorCount", label: "Радиаторы (шт)", max: 150 },
+  { key: "floorHeatingZones", label: "Тёплый пол (зон)", max: 150 },
+  { key: "motionPoints", label: "Датчики движения", max: 150 },
+  { key: "antiLeakZones", label: "Антипротечка (зон)", hint: "3 датчика на зону: ванна, раковина, стиральная машина", max: 150 },
+  { key: "doorPoints", label: "Охранка двери/окна", max: 150 },
 ];
 
 export function ScenarioForm({ value, onChange }: Props) {
@@ -36,6 +35,7 @@ export function ScenarioForm({ value, onChange }: Props) {
                 <label>{f.label}</label>
                 <span className="num">{v}</span>
               </div>
+              {f.hint && <div className="field-hint">{f.hint}</div>}
               <input
                 type="range"
                 min={0}
