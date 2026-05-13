@@ -131,7 +131,7 @@ function pickDimmer(ctx: ShellyCtx): Device | undefined {
     // 0-10V и DALI диммеры требуют нейтраль — только фазовые (Dimmer 2, Dimmer GEN3)
     const phasecut = dimmers.filter((d) => {
       const t = d.title.toLowerCase();
-      return !t.includes("0-10v") && !t.includes("0/1-10v") && !t.includes("dali");
+      return !t.includes("10v") && !t.includes("dali");
     });
     const inWallPc = phasecut.filter((d) => (d.install || []).includes("in_wall"));
     const candidate = cheapest(inWallPc) ?? cheapest(phasecut);
@@ -150,14 +150,14 @@ function pickDimmer(ctx: ShellyCtx): Device | undefined {
     if (is010v) {
       const v10 = din.filter((d) => {
         const t = d.title.toLowerCase();
-        return t.includes("0-10v") || t.includes("0/1-10v");
+        return t.includes("10v");
       });
       return cheapest(v10) ?? cheapest(din) ?? cheapest(dimmers);
     }
     // DIN + фазовый: исключаем 0-10V и DALI
     const phasedin = din.filter((d) => {
       const t = d.title.toLowerCase();
-      return !t.includes("0-10v") && !t.includes("0/1-10v") && !t.includes("dali");
+      return !t.includes("10v") && !t.includes("dali");
     });
     return cheapest(phasedin) ?? cheapest(din) ?? cheapest(dimmers);
   }
@@ -167,7 +167,7 @@ function pickDimmer(ctx: ShellyCtx): Device | undefined {
   if (is010v) {
     const v10 = inWall.filter((d) => {
       const t = d.title.toLowerCase();
-      return t.includes("0-10v") || t.includes("0/1-10v");
+      return t.includes("10v");
     });
     const candidate = cheapest(v10) ?? cheapest(inWall);
     if (candidate) {
@@ -183,7 +183,7 @@ function pickDimmer(ctx: ShellyCtx): Device | undefined {
   // Стандартный фазовый: исключаем 0-10V и DALI
   const phasecut = inWall.filter((d) => {
     const t = d.title.toLowerCase();
-    return !t.includes("0-10v") && !t.includes("0/1-10v") && !t.includes("dali");
+    return !t.includes("10v") && !t.includes("dali");
   });
   return cheapest(phasecut) ?? cheapest(inWall);
 }
