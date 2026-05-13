@@ -125,7 +125,9 @@ function pickDimmer(ctx: ShellyCtx): Device | undefined {
   const { devs, s, notes } = ctx;
   const dimmers = devs.filter((d) => d.category === "dimmer");
 
-  if (s.noNeutral) {
+  const is010v = s.dimmerType === "0-10v";
+
+  if (s.noNeutral && !is010v) {
     // 0-10V и DALI диммеры требуют нейтраль — только фазовые (Dimmer 2, Dimmer GEN3)
     const phasecut = dimmers.filter((d) => {
       const t = d.title.toLowerCase();
@@ -145,11 +147,45 @@ function pickDimmer(ctx: ShellyCtx): Device | undefined {
 
   if (s.installStyle === "din") {
     const din = dimmers.filter((d) => (d.install || []).includes("din"));
-    return cheapest(din) ?? cheapest(dimmers);
+    if (is010v) {
+      const v10 = din.filter((d) => {
+        const t = d.title.toLowerCase();
+        return t.includes("0-10v") || t.includes("0/1-10v");
+      });
+      return cheapest(v10) ?? cheapest(din) ?? cheapest(dimmers);
+    }
+    // DIN + фазовый: исключаем 0-10V и DALI
+    const phasedin = din.filter((d) => {
+      const t = d.title.toLowerCase();
+      return !t.includes("0-10v") && !t.includes("0/1-10v") && !t.includes("dali");
+    });
+    return cheapest(phasedin) ?? cheapest(din) ?? cheapest(dimmers);
   }
 
   const inWall = dimmers.filter((d) => (d.install || []).includes("in_wall"));
-  return cheapest(inWall) ?? cheapest(dimmers);
+
+  if (is010v) {
+    const v10 = inWall.filter((d) => {
+      const t = d.title.toLowerCase();
+      return t.includes("0-10v") || t.includes("0/1-10v");
+    });
+    const candidate = cheapest(v10) ?? cheapest(inWall);
+    if (candidate) {
+      notes.push(
+        "Диммер 0–10В: " + candidate.title + " — управляет LED-драйвером через аналоговый сигнал 0–10В. " +
+        "Подходит для профессиональных светильников с драйвером 0–10В (офисные панели, трековые LED). " +
+        "Обычные лампы 220В к нему НЕ подключаются напрямую."
+      );
+    }
+    return candidate;
+  }
+
+  // Стандартный фазовый: исключаем 0-10V и DALI
+  const phasecut = inWall.filter((d) => {
+    const t = d.title.toLowerCase();
+    return !t.includes("0-10v") && !t.includes("0/1-10v") && !t.includes("dali");
+  });
+  return cheapest(phasecut) ?? cheapest(inWall);
 }
 
 function pickRgbw(ctx: ShellyCtx): Device | undefined {

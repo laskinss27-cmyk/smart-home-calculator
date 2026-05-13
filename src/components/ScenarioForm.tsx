@@ -1,5 +1,5 @@
 import React from "react";
-import type { Scenario } from "../types";
+import type { DimmerType, Scenario } from "../types";
 
 interface Props {
   value: Scenario;
@@ -44,6 +44,22 @@ export function ScenarioForm({ value, onChange }: Props) {
                 value={v}
                 onChange={(e) => set(f.key, Number(e.target.value) as any)}
               />
+              {f.key === "dimmerPoints" && v > 0 && (
+                <div className="dimmer-type-row">
+                  {(["phase", "0-10v"] as DimmerType[]).map((t) => (
+                    <label key={t} className="check" style={{ marginRight: 12 }}>
+                      <input
+                        type="radio"
+                        name="dimmerType"
+                        value={t}
+                        checked={value.dimmerType === t}
+                        onChange={() => set("dimmerType", t)}
+                      />
+                      <span>{t === "phase" ? "220В (лампы накаливания / LED 220В)" : "0–10В (LED-драйвер)"}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
             </div>
           );
         })}

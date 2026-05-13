@@ -46,6 +46,7 @@ const DEFAULT_SCENARIO: Scenario = {
   noNeutral: false,
   installStyle: "any",
   protocolPref: "any",
+  dimmerType: "phase",
 };
 
 export function App() {

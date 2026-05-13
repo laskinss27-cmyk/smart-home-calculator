@@ -49,6 +49,7 @@ export interface Catalog {
 
 export type InstallStyle = "any" | "in_wall" | "din" | "panel";
 export type ProtocolPref = "any" | "wifi_bt" | "zwave";
+export type DimmerType = "phase" | "0-10v";
 
 export interface Scenario {
   lightPoints: number;        // обычные группы освещения (вкл/выкл)
@@ -68,6 +69,7 @@ export interface Scenario {
   noNeutral: boolean;         // в подрозетнике нет нейтрали → нужны 1L/2L + Bypass
   installStyle: InstallStyle; // куда ставим: подрозетник / DIN / настенная панель / без разницы
   protocolPref: ProtocolPref; // Wi-Fi/BT (Pro/Plus/Gen3-4) или Z-Wave (Wave) или без разницы
+  dimmerType: DimmerType;     // тип диммирования: 220В фазовый или 0-10В (LED-драйвер)
 }
 
 export interface PickedItem {
