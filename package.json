@@ -1,6 +1,6 @@
 {
   "name": "smart-home-calculator",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Калькулятор оборудования умного дома (Shelly / HitePRO)",
   "main": "dist-electron/main.js",
   "author": "Умный Дом",
